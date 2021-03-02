@@ -9,8 +9,14 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_LINK_DEPENDS_NO_SHARED ON)
 
+# Generate compile_commands.json file for clang
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 add_library(chess SHARED
     src/board.cpp
+    src/move.cpp
+    src/piece.cpp
+    src/square.cpp
 )
 target_include_directories(chess PUBLIC include)
 

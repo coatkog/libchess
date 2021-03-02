@@ -1,0 +1,13 @@
+---
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  readability-*,
+  -readability-braces-around-statements,
+  -readability-magic-numbers,
+  cppcoreguidelines-*,
+  performance-*,
+  misc-*,
+  bugprone-*'

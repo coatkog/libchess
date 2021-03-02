@@ -1,47 +1,109 @@
 #include "libchess/board.h"
 
 #include <sstream>
-#include <iostream>
 
 namespace libchess {
 
-std::string Board::FenToHumanReadableString(const std::string& fen) {
-    std::stringstream human_readable_string;
+Board::Board()
+    : _board(Board::kStartingBoard) {}
 
-    std::string board = fen.substr(0, fen.find(" "));
-
-    std::size_t current_slash_index = board.find("/");
-    while (current_slash_index != std::string::npos) {
-        board[current_slash_index] = '\n';
-
-        current_slash_index = board.find("/", current_slash_index + 1);
-    }
-
-    for (std::size_t i = 0; i < board.size(); i++) {
-        const char c = board[i];
-
-        if (std::isdigit(c)) {
-            for (std::size_t k = 0; k < static_cast<std::size_t>(c) - '0'; k++) {
-                human_readable_string << ".";
-            }
-        } else {
-            human_readable_string << c;
-        }
-    }
-
-    return human_readable_string.str();
-}
-
-Board::Board() {
-    _fen = kStartingFen;
-}
-
-const std::string& Board::GetFen() {
-    return _fen;
+std::string Board::GetFen() {
+    return "fen";
 }
 
 std::string Board::GetPrintableString() const {
-    return Board::FenToHumanReadableString(_fen);
+    std::stringstream printable_board;
+
+    printable_board << "  ABCDEFGH\n";
+
+    for (std::size_t i = 0; i < kBoardWidth; i++) {
+        printable_board << kBoardWidth - i << " ";
+        for (std::size_t j = 0; j < kBoardHeight; j++) {
+            printable_board << _board[i][j].GetPrintableString();
+        }
+        printable_board << "\n";
+    }
+
+    return printable_board.str();
 }
+
+void Board::DoMove(Move move) {
+    _board[move.GetStartingX()][move.GetStartingY()].SwapPieces(
+        _board[move.GetEndingX()][move.GetEndingY()]);
+}
+
+const Board::BoardMatrix Board::kStartingBoard = {
+    { { Square(SquareColor::BLACK, PieceType::ROOK, PieceColor::BLACK),
+        Square(SquareColor::WHITE, PieceType::KNIGHT, PieceColor::BLACK),
+        Square(SquareColor::BLACK, PieceType::BISHOP, PieceColor::BLACK),
+        Square(SquareColor::WHITE, PieceType::QUEEN, PieceColor::BLACK),
+        Square(SquareColor::BLACK, PieceType::KING, PieceColor::BLACK),
+        Square(SquareColor::WHITE, PieceType::BISHOP, PieceColor::BLACK),
+        Square(SquareColor::BLACK, PieceType::KNIGHT, PieceColor::BLACK),
+        Square(SquareColor::WHITE, PieceType::ROOK, PieceColor::BLACK) },
+
+      { Square(SquareColor::WHITE, PieceType::PAWN, PieceColor::BLACK),
+        Square(SquareColor::BLACK, PieceType::PAWN, PieceColor::BLACK),
+        Square(SquareColor::WHITE, PieceType::PAWN, PieceColor::BLACK),
+        Square(SquareColor::BLACK, PieceType::PAWN, PieceColor::BLACK),
+        Square(SquareColor::WHITE, PieceType::PAWN, PieceColor::BLACK),
+        Square(SquareColor::BLACK, PieceType::PAWN, PieceColor::BLACK),
+        Square(SquareColor::WHITE, PieceType::PAWN, PieceColor::BLACK),
+        Square(SquareColor::BLACK, PieceType::PAWN, PieceColor::BLACK) },
+
+      { Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE) },
+
+      { Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK) },
+
+      { Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE) },
+
+      { Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK),
+        Square(SquareColor::WHITE),
+        Square(SquareColor::BLACK) },
+
+      { Square(SquareColor::BLACK, PieceType::PAWN, PieceColor::WHITE),
+        Square(SquareColor::WHITE, PieceType::PAWN, PieceColor::WHITE),
+        Square(SquareColor::BLACK, PieceType::PAWN, PieceColor::WHITE),
+        Square(SquareColor::WHITE, PieceType::PAWN, PieceColor::WHITE),
+        Square(SquareColor::BLACK, PieceType::PAWN, PieceColor::WHITE),
+        Square(SquareColor::WHITE, PieceType::PAWN, PieceColor::WHITE),
+        Square(SquareColor::BLACK, PieceType::PAWN, PieceColor::WHITE),
+        Square(SquareColor::WHITE, PieceType::PAWN, PieceColor::WHITE) },
+
+      { Square(SquareColor::WHITE, PieceType::ROOK, PieceColor::WHITE),
+        Square(SquareColor::BLACK, PieceType::KNIGHT, PieceColor::WHITE),
+        Square(SquareColor::WHITE, PieceType::BISHOP, PieceColor::WHITE),
+        Square(SquareColor::BLACK, PieceType::QUEEN, PieceColor::WHITE),
+        Square(SquareColor::WHITE, PieceType::KING, PieceColor::WHITE),
+        Square(SquareColor::BLACK, PieceType::BISHOP, PieceColor::WHITE),
+        Square(SquareColor::WHITE, PieceType::KNIGHT, PieceColor::WHITE),
+        Square(SquareColor::BLACK, PieceType::ROOK, PieceColor::WHITE) } }
+};
 
 }

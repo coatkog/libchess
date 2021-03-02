@@ -1,3 +1,8 @@
+#include "libchess/move.h"
+#include "libchess/square.h"
+
+#include <array>
+#include <memory>
 #include <string>
 
 namespace libchess {
@@ -6,18 +11,21 @@ class Board {
   public:
     Board();
 
-    const std::string& GetFen();
-    std::string GetPrintableString() const;
+    static std::string GetFen();
+
+    [[nodiscard]] std::string GetPrintableString() const;
+
+    void DoMove(Move move);
 
   private:
-    static constexpr const char* kStartingFen =
-        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     static constexpr std::size_t kBoardHeight = 8;
     static constexpr std::size_t kBoardWidth = 8;
 
-    std::string _fen;
+    using BoardMatrix = std::array<std::array<Square, kBoardWidth>, kBoardHeight>;
 
-    static std::string FenToHumanReadableString(const std::string& fen);
+    static const BoardMatrix kStartingBoard;
+
+    BoardMatrix _board;
 };
 
 }
