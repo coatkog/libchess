@@ -5,7 +5,8 @@
 namespace libchess {
 
 Board::Board()
-    : _board(Board::kStartingBoard) {}
+    : _board(Board::kStartingBoard) {
+}
 
 std::string Board::GetFen() {
     return "fen";

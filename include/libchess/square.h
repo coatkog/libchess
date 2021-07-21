@@ -4,7 +4,8 @@
 
 namespace libchess {
 
-enum class SquareColor : unsigned int {
+enum class SquareColor : unsigned int
+{
     WHITE = 0,
     BLACK
 };

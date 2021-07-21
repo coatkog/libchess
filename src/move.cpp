@@ -8,7 +8,7 @@ Move::Move(const std::string& move_str) {
     // TODO: Inherit move_error from runtime_error and throw it instead
 
     if (move_str.size() != 4) {
-        throw std::runtime_error("Invalid move."); 
+        throw std::runtime_error("Invalid move.");
     }
     if (move_str[0] < 'a' || move_str[0] > 'h') {
         throw std::runtime_error("Invalid move.");

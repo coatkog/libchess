@@ -1,13 +1,11 @@
 ---
 Checks: >
+  bugprone-*'
   clang-diagnostic-*,
   clang-analyzer-*,
-  modernize-*,
-  -modernize-use-trailing-return-type,
-  readability-*,
-  -readability-braces-around-statements,
-  -readability-magic-numbers,
+  concurrency-*,
   cppcoreguidelines-*,
-  performance-*,
   misc-*,
-  bugprone-*'
+  modernize-*,
+  performance-*,
+  readability-*,

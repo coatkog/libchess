@@ -2,7 +2,8 @@
 
 namespace libchess {
 
-enum class PieceType : unsigned int {
+enum class PieceType : unsigned int
+{
     PAWN = 0,
     KNIGHT,
     BISHOP,
@@ -11,7 +12,8 @@ enum class PieceType : unsigned int {
     KING
 };
 
-enum class PieceColor : unsigned int {
+enum class PieceColor : unsigned int
+{
     WHITE = 0,
     BLACK
 };

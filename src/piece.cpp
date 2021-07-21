@@ -4,7 +4,8 @@ namespace libchess {
 
 Piece::Piece(PieceType piece_type, PieceColor piece_color)
     : _type(piece_type)
-    , _color(piece_color) {}
+    , _color(piece_color) {
+}
 
 std::string Piece::GetPrintableString() const {
     switch (_color) {
