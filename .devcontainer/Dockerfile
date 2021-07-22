@@ -8,5 +8,3 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     build-essential \
     cmake \
     clangd-12
-
-RUN ln /usr/bin/clangd-12 /usr/bin/clangd
