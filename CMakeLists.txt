@@ -22,3 +22,10 @@ target_include_directories(chess PUBLIC include)
 
 add_executable(demo demo/main.cpp)
 target_link_libraries(demo chess)
+
+add_executable(demo-gui
+    demo-gui/main.cpp
+    demo-gui/game.cpp
+    demo-gui/sprites.cpp
+)
+target_link_libraries(demo-gui chess sfml-graphics sfml-window sfml-system)

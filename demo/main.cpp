@@ -21,9 +21,10 @@ int main() {
     sigaction(SIGINT, &sig_int_handler, NULL);
 
     libchess::Board b;
-    std::cout << std::endl << b.GetPrintableString() << std::endl;
 
-    while (true) {
+    do {
+        std::cout << std::endl << b.ToString() << std::endl;
+
         try {
             std::cout << "Enter move: ";
 
@@ -36,9 +37,7 @@ int main() {
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;
         }
-
-        std::cout << std::endl << b.GetPrintableString() << std::endl;
-    }
+    } while (true);
 
     return 0;
 }

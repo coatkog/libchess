@@ -1,18 +1,49 @@
 #include "libchess/board.h"
 
 #include <sstream>
+#include <stdexcept>
 
 namespace libchess {
 
 Board::Board()
-    : _board(Board::kStartingBoard) {
+    : _board(Board::kStartingBoard)
+    , _white_to_move(true) {
 }
 
 std::string Board::GetFen() {
     return "fen";
 }
 
-std::string Board::GetPrintableString() const {
+Board::BoardMatrix Board::GetBoard() const {
+    return _board;
+}
+
+void Board::DoMove(const Move& move) {
+    ValidateMove(move);
+
+    _board[move.GetStartingX()][move.GetStartingY()].SwapPieces(
+        _board[move.GetEndingX()][move.GetEndingY()]);
+
+    _white_to_move = !_white_to_move;
+}
+
+void Board::ValidateMove(const Move& move) {
+    const Square& starting_square = _board[move.GetStartingX()][move.GetStartingY()];
+
+    if (!starting_square.ContainsPiece()) {
+        throw std::runtime_error("No piece to move.");
+    }
+
+    if (_white_to_move && starting_square.GetPieceColor() == PieceColor::BLACK) {
+        throw std::runtime_error("White to move.");
+    }
+
+    if (!_white_to_move && starting_square.GetPieceColor() == PieceColor::WHITE) {
+        throw std::runtime_error("Black to move.");
+    }
+}
+
+std::string Board::ToString() const {
     std::stringstream printable_board;
 
     printable_board << "  ABCDEFGH\n";
@@ -20,17 +51,12 @@ std::string Board::GetPrintableString() const {
     for (std::size_t i = 0; i < kBoardWidth; i++) {
         printable_board << kBoardWidth - i << " ";
         for (std::size_t j = 0; j < kBoardHeight; j++) {
-            printable_board << _board[i][j].GetPrintableString();
+            printable_board << _board[i][j].ToString();
         }
         printable_board << "\n";
     }
 
     return printable_board.str();
-}
-
-void Board::DoMove(Move move) {
-    _board[move.GetStartingX()][move.GetStartingY()].SwapPieces(
-        _board[move.GetEndingX()][move.GetEndingY()]);
 }
 
 const Board::BoardMatrix Board::kStartingBoard = {

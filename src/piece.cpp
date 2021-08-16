@@ -7,7 +7,15 @@ Piece::Piece(PieceType piece_type, PieceColor piece_color)
     , _color(piece_color) {
 }
 
-std::string Piece::GetPrintableString() const {
+PieceType Piece::GetType() const {
+    return _type;
+}
+
+PieceColor Piece::GetColor() const {
+    return _color;
+}
+
+std::string Piece::ToString() const {
     switch (_color) {
         case PieceColor::BLACK: {
             switch (_type) {

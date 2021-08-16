@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 namespace libchess {
@@ -22,7 +24,10 @@ class Piece {
   public:
     Piece(PieceType piece_type, PieceColor piece_color);
 
-    [[nodiscard]] std::string GetPrintableString() const;
+    [[nodiscard]] PieceType GetType() const;
+    [[nodiscard]] PieceColor GetColor() const;
+
+    [[nodiscard]] std::string ToString() const;
 
   private:
     PieceType _type;

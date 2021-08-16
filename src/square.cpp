@@ -15,15 +15,35 @@ Square::Square(SquareColor square_color, PieceType piece_type, PieceColor piece_
     , _piece(std::make_shared<Piece>(piece_type, piece_color)) {
 }
 
-std::string Square::GetPrintableString() const {
-    if (_piece != nullptr) {
-        return _piece->GetPrintableString();
-    }
-    return ".";
-}
-
 void Square::SwapPieces(Square& square) {
     std::swap(_piece, square._piece);
+}
+
+PieceColor Square::GetPieceColor() const {
+    if (!_piece) {
+        // TODO: throw exception
+    }
+
+    return _piece->GetColor();
+}
+
+PieceType Square::GetPieceType() const {
+    if (_piece) {
+        // TODO: throw exception
+    }
+
+    return _piece->GetType();
+}
+
+bool Square::ContainsPiece() const {
+    return _piece != nullptr;
+}
+
+std::string Square::ToString() const {
+    if (_piece != nullptr) {
+        return _piece->ToString();
+    }
+    return ".";
 }
 
 }
