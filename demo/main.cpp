@@ -31,9 +31,7 @@ int main() {
             std::string move_str;
             std::cin >> move_str;
 
-            libchess::Move move(move_str);
-
-            b.DoMove(move);
+            b.DoMove(move_str);
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;
         }

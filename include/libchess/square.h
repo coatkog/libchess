@@ -20,9 +20,11 @@ class Square {
 
     void SwapPieces(Square& square);
 
+    [[nodiscard]] SquareColor GetColor() const;
+
     [[nodiscard]] PieceColor GetPieceColor() const;
     [[nodiscard]] PieceType GetPieceType() const;
-    [[nodiscard]] bool ContainsPiece() const;
+    [[nodiscard]] bool Empty() const;
 
     [[nodiscard]] std::string ToString() const;
 

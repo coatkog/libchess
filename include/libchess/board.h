@@ -6,14 +6,13 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace libchess {
 
 class Board {
   public:
-    static constexpr std::size_t kBoardHeight = 8;
-    static constexpr std::size_t kBoardWidth = 8;
-    using BoardMatrix = std::array<std::array<Square, kBoardWidth>, kBoardHeight>;
+    using BoardMatrix = std::array<std::array<Square, 8>, 8>;
 
     Board();
 
@@ -21,7 +20,24 @@ class Board {
 
     [[nodiscard]] BoardMatrix GetBoard() const;
 
-    void DoMove(const Move& move);
+    std::vector<Move> GetAvailableMoves(int starting_x, int starting_y);
+
+    void GetAvailableMovesPawn(const Square& starting_square,
+                               std::vector<Move>& available_moves,
+                               int starting_x,
+                               int starting_y);
+    void GetAvailableMovesKnight(std::vector<Move>& available_moves,
+                                 int starting_x,
+                                 int starting_y);
+    void GetAvailableMovesBishop(std::vector<Move>& available_moves,
+                                 int starting_x,
+                                 int starting_y);
+    void GetAvailableMovesRook(std::vector<Move>& available_moves, int starting_x, int starting_y);
+    void GetAvailableMovesQueen(std::vector<Move>& available_moves, int starting_x, int starting_y);
+    void GetAvailableMovesKing(std::vector<Move>& available_moves, int starting_x, int starting_y);
+
+    void DoMove(const std::string& move_str);
+    void DoMove(int starting_x, int starting_y, int ending_x, int ending_y);
 
     [[nodiscard]] std::string ToString() const;
 
@@ -31,7 +47,15 @@ class Board {
     BoardMatrix _board;
     bool _white_to_move;
 
+    std::vector<Move> _move_history;
+
     void ValidateMove(const Move& move);
+    void DoMove(const Move& move);
+
+    bool CheckPossibleMove(std::vector<Move>& available_moves, const Move& move);
+
+    Square& GetStartingSquare(const Move& move);
+    Square& GetEndingSquare(const Move& move);
 };
 
 }

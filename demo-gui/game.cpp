@@ -1,18 +1,25 @@
 #include "game.h"
 
+#include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
 
+#include <chrono>
 #include <exception>
+#include <iostream>
 #include <iterator>
 #include <memory>
 #include <sstream>
 
+#define log(x) std::cout << x << std::endl
+
 const sf::Color Game::kWhiteSquareColor = sf::Color::White;
 const sf::Color Game::kBlackSquareColor = sf::Color(128, 128, 128);
 const sf::Color Game::kSelectedSquareColor = sf::Color::Red;
+const sf::Color Game::kAvailableSquareColor = sf::Color(192, 192, 192);
 
 Game::Game(float width)
     : _width(width)
@@ -29,10 +36,20 @@ Game::Game(float width)
 
 void Game::Draw(sf::RenderWindow& window) {
     DrawBoard(window);
+    DrawBoardInfo(window);
     DrawPieces(window);
+
+    DrawAvailableMoves(window);
 }
 
 void Game::OnClick(int x, int y) {
+    if (x < kTopLeftPadding || x > kTopLeftPadding + _board_width) {
+        return;
+    }
+    if (y < kTopLeftPadding || y > kTopLeftPadding + _board_width) {
+        return;
+    }
+
     if (_clicked_square.x != -1) {
         sf::Vector2i new_clicked_square = WindowClickPositionToSquare(x, y);
 
@@ -42,21 +59,45 @@ void Game::OnClick(int x, int y) {
         _clicked_square.y = -1;
     } else {
         _clicked_square = WindowClickPositionToSquare(x, y);
+
+        auto start = std::chrono::steady_clock::now();
+
+        _available_moves = _board.GetAvailableMoves(_clicked_square.x, _clicked_square.y);
+
+        auto end = std::chrono::steady_clock::now();
+
+        auto delta = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+
+        log("Took: " << delta << " µs to calculate available moves.");
     }
 }
 
 void Game::DoMove(int starting_x, int starting_y, int ending_x, int ending_y) {
-    std::stringstream ss;
-
-    ss << static_cast<char>('a' + starting_x);
-    ss << static_cast<char>('8' - starting_y);
-    ss << static_cast<char>('a' + ending_x);
-    ss << static_cast<char>('8' - ending_y);
-
     try {
-        _board.DoMove(ss.str());
+        _board.DoMove(starting_x, starting_y, ending_x, ending_y);
     } catch (const std::exception& e) {
-        std::cout << e.what() << std::endl;
+        log("Error: " << e.what());
+    }
+}
+
+void Game::DrawAvailableMoves(sf::RenderWindow& window) {
+    if (_clicked_square.x == -1) {
+        return;
+    }
+
+    sf::CircleShape dot(kAvailableMoveCircleRadius);
+    dot.setFillColor(kAvailableSquareColor);
+
+    for (const auto& move : _available_moves) {
+        int ending_x = move.GetEndingX();
+        int ending_y = move.GetEndingY();
+
+        dot.setPosition(sf::Vector2f(kTopLeftPadding + ending_x * _square_width +
+                                         _square_width / 2 - kAvailableMoveCircleRadius,
+                                     kTopLeftPadding + ending_y * _square_width +
+                                         _square_width / 2 - kAvailableMoveCircleRadius));
+
+        window.draw(dot);
     }
 }
 
@@ -70,26 +111,30 @@ void Game::DrawBoard(sf::RenderWindow& window) {
 
     for (std::size_t i = 0; i < 8; i++) {
         for (std::size_t j = 0; j < 8; j++) {
-            sf::RectangleShape square(sf::Vector2f(_square_width, _square_width));
+            libchess::Square square = _board.GetBoard()[i][j];
+
+            sf::RectangleShape square_shape(sf::Vector2f(_square_width, _square_width));
 
             if (_clicked_square.x == static_cast<int>(j) &&
                 _clicked_square.y == static_cast<int>(i)) {
-                square.setFillColor(kSelectedSquareColor);
+                square_shape.setFillColor(kSelectedSquareColor);
             } else {
-                if ((i % 2 == 0 && j % 2 == 0) || (i % 2 != 0 && j % 2 != 0)) {
-                    square.setFillColor(kWhiteSquareColor);
+                if (square.GetColor() == libchess::SquareColor::WHITE) {
+                    square_shape.setFillColor(kWhiteSquareColor);
                 } else {
-                    square.setFillColor(kBlackSquareColor);
+                    square_shape.setFillColor(kBlackSquareColor);
                 }
             }
 
-            square.setPosition(sf::Vector2f(kTopLeftPadding + j * _square_width,
-                                            kTopLeftPadding + i * _square_width));
+            square_shape.setPosition(sf::Vector2f(kTopLeftPadding + j * _square_width,
+                                                  kTopLeftPadding + i * _square_width));
 
-            window.draw(square);
+            window.draw(square_shape);
         }
     }
+}
 
+void Game::DrawBoardInfo(sf::RenderWindow& window) {
     for (std::size_t i = 0; i < 8; i++) {
         sf::Text text;
         text.setFont(_font);
@@ -117,13 +162,11 @@ void Game::DrawPieces(sf::RenderWindow& window) {
         for (std::size_t j = 0; j < 8; j++) {
             libchess::Square square = _board.GetBoard()[i][j];
 
-            if (!square.ContainsPiece()) {
+            if (square.Empty()) {
                 continue;
             }
 
             sf::Sprite* sprite = nullptr;
-            sf::Vector2f position(kTopLeftPadding + j * _square_width,
-                                  kTopLeftPadding + i * _square_width);
 
             libchess::PieceColor piece_color = square.GetPieceColor();
             libchess::PieceType piece_type = square.GetPieceType();
@@ -182,7 +225,8 @@ void Game::DrawPieces(sf::RenderWindow& window) {
                 continue;
             }
 
-            sprite->setPosition(position);
+            sprite->setPosition(sf::Vector2f(kTopLeftPadding + j * _square_width,
+                                             kTopLeftPadding + i * _square_width));
             window.draw(*sprite);
         }
     }

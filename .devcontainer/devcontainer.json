@@ -9,7 +9,8 @@
 	},
 
 	"runArgs": [
-		"--name=libchess-Ubuntu"
+		"--name=libchess-Ubuntu",
+		"--network=host"
 	],
 
 	// Set *default* container specific settings.json values on container create.
@@ -30,7 +31,10 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "sudo ln /usr/bin/clangd-12 /usr/bin/clangd",
+	"postCreateCommand": [
+		"sudo ln /usr/bin/clangd-12 /usr/bin/clangd",
+		"export DISPLAY=192.168.2.8:0.0", // For displaying. Get host with: route.exe print | grep 0.0.0.0 | head -1 | awk '{print $4}'
+	],
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"

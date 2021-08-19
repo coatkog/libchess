@@ -8,17 +8,23 @@ namespace libchess {
 class Move {
   public:
     Move(const std::string& move_str);
+    Move(int starting_x, int starting_y, int ending_x, int ending_y);
 
-    [[nodiscard]] std::size_t GetStartingX() const;
-    [[nodiscard]] std::size_t GetStartingY() const;
-    [[nodiscard]] std::size_t GetEndingX() const;
-    [[nodiscard]] std::size_t GetEndingY() const;
+    [[nodiscard]] int GetStartingX() const;
+    [[nodiscard]] int GetStartingY() const;
+    [[nodiscard]] int GetEndingX() const;
+    [[nodiscard]] int GetEndingY() const;
+
+    [[nodiscard]] bool Valid() const;
 
   private:
-    std::size_t _starting_x;
-    std::size_t _starting_y;
-    std::size_t _ending_x;
-    std::size_t _ending_y;
+    static constexpr int kOffsetX = -'a';
+    static constexpr int kOffsetY = 8 + '0';
+
+    int _starting_x;
+    int _starting_y;
+    int _ending_x;
+    int _ending_y;
 };
 
 }

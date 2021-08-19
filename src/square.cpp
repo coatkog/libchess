@@ -1,5 +1,4 @@
 #include "libchess/square.h"
-#include <type_traits>
 
 namespace libchess {
 
@@ -16,7 +15,16 @@ Square::Square(SquareColor square_color, PieceType piece_type, PieceColor piece_
 }
 
 void Square::SwapPieces(Square& square) {
+    // TODO: Should this be here?
+    if (!square.Empty()) {
+        square._piece = nullptr;
+    }
+
     std::swap(_piece, square._piece);
+}
+
+SquareColor Square::GetColor() const {
+    return _color;
 }
 
 PieceColor Square::GetPieceColor() const {
@@ -35,8 +43,8 @@ PieceType Square::GetPieceType() const {
     return _piece->GetType();
 }
 
-bool Square::ContainsPiece() const {
-    return _piece != nullptr;
+bool Square::Empty() const {
+    return _piece == nullptr;
 }
 
 std::string Square::ToString() const {
