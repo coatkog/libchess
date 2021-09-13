@@ -30,21 +30,21 @@ class Sprites {
   private:
     static constexpr int kTexturePieceWidth = 320;
 
-    float _piece_width;
+    float m_piece_width;
 
-    sf::Texture _texture;
+    sf::Texture m_texture;
 
-    sf::Sprite _white_king_sprite;
-    sf::Sprite _white_queen_sprite;
-    sf::Sprite _white_rook_sprite;
-    sf::Sprite _white_bishop_sprite;
-    sf::Sprite _white_knight_sprite;
-    sf::Sprite _white_pawn_sprite;
+    sf::Sprite m_white_king_sprite;
+    sf::Sprite m_white_queen_sprite;
+    sf::Sprite m_white_rook_sprite;
+    sf::Sprite m_white_bishop_sprite;
+    sf::Sprite m_white_knight_sprite;
+    sf::Sprite m_white_pawn_sprite;
 
-    sf::Sprite _black_king_sprite;
-    sf::Sprite _black_queen_sprite;
-    sf::Sprite _black_rook_sprite;
-    sf::Sprite _black_bishop_sprite;
-    sf::Sprite _black_knight_sprite;
-    sf::Sprite _black_pawn_sprite;
+    sf::Sprite m_black_king_sprite;
+    sf::Sprite m_black_queen_sprite;
+    sf::Sprite m_black_rook_sprite;
+    sf::Sprite m_black_bishop_sprite;
+    sf::Sprite m_black_knight_sprite;
+    sf::Sprite m_black_pawn_sprite;
 };

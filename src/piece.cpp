@@ -3,22 +3,31 @@
 namespace libchess {
 
 Piece::Piece(PieceType piece_type, PieceColor piece_color)
-    : _type(piece_type)
-    , _color(piece_color) {
+    : m_type(piece_type)
+    , m_color(piece_color)
+    , m_first_move(true) {
 }
 
 PieceType Piece::GetType() const {
-    return _type;
+    return m_type;
 }
 
 PieceColor Piece::GetColor() const {
-    return _color;
+    return m_color;
+}
+
+bool Piece::GetFirstMove() const {
+    return m_first_move;
+}
+
+void Piece::SetFirstMove(bool first_move) {
+    m_first_move = first_move;
 }
 
 std::string Piece::ToString() const {
-    switch (_color) {
+    switch (m_color) {
         case PieceColor::BLACK: {
-            switch (_type) {
+            switch (m_type) {
                 case PieceType::PAWN:
                     return "p";
                 case PieceType::KNIGHT:
@@ -35,7 +44,7 @@ std::string Piece::ToString() const {
             break;
         }
         case PieceColor::WHITE: {
-            switch (_type) {
+            switch (m_type) {
                 case PieceType::PAWN:
                     return "P";
                 case PieceType::KNIGHT:

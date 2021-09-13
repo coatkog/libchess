@@ -12,12 +12,17 @@
 #include <iostream>
 #include <memory>
 
-int main() {
-    Game game(800);
+#define WINDOW_WIDTH           800
+#define WINDOW_WIDTH_WITH_LOGS WINDOW_WIDTH + 400
+#define FRAMERATE              30
 
-    sf::RenderWindow window(sf::VideoMode(800, 800),
+int main() {
+    Game game(WINDOW_WIDTH);
+
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH_WITH_LOGS, WINDOW_WIDTH),
                             "libchess demo",
                             sf::Style::Titlebar | sf::Style::Close);
+    window.setFramerateLimit(FRAMERATE);
 
     while (window.isOpen()) {
         sf::Event event;

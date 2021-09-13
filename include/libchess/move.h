@@ -17,14 +17,16 @@ class Move {
 
     [[nodiscard]] bool Valid() const;
 
+    [[nodiscard]] bool Compare(const Move& move) const;
+
   private:
     static constexpr int kOffsetX = -'a';
     static constexpr int kOffsetY = 8 + '0';
 
-    int _starting_x;
-    int _starting_y;
-    int _ending_x;
-    int _ending_y;
+    int m_starting_x;
+    int m_starting_y;
+    int m_ending_x;
+    int m_ending_y;
 };
 
 }

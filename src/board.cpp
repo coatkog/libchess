@@ -1,14 +1,15 @@
 #include "libchess/board.h"
 #include "libchess/piece.h"
 
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 
 namespace libchess {
 
 Board::Board()
-    : _board(Board::kStartingBoard)
-    , _white_to_move(true) {
+    : m_board(Board::kStartingBoard)
+    , m_white_to_move(true) {
 }
 
 std::string Board::GetFen() {
@@ -16,7 +17,7 @@ std::string Board::GetFen() {
 }
 
 Board::BoardMatrix Board::GetBoard() const {
-    return _board;
+    return m_board;
 }
 
 std::vector<Move> Board::GetAvailableMoves(int starting_x, int starting_y) {
@@ -27,7 +28,7 @@ std::vector<Move> Board::GetAvailableMoves(int starting_x, int starting_y) {
         return available_moves;
     }
 
-    const Square& starting_square = _board[starting_y][starting_x];
+    const Square& starting_square = m_board[starting_y][starting_x];
 
     // TODO: Should this be checked here?
     if (starting_square.Empty()) {
@@ -62,15 +63,43 @@ void Board::GetAvailableMovesPawn(const Square& starting_square,
                                   std::vector<Move>& available_moves,
                                   int starting_x,
                                   int starting_y) {
-    // TODO: Taking, after first move, en passant, promotion
+    // TODO: En passant, promotion
     switch (starting_square.GetPieceColor()) {
         case PieceColor::WHITE:
-            available_moves.emplace_back(starting_x, starting_y, starting_x, starting_y - 1);
-            available_moves.emplace_back(starting_x, starting_y, starting_x, starting_y - 2);
+            CheckPossibleMovePawn(available_moves,
+                                  Move(starting_x, starting_y, starting_x, starting_y - 1),
+                                  false);
+
+            if (starting_square.IsPieceFirstMove()) {
+                CheckPossibleMovePawn(available_moves,
+                                      Move(starting_x, starting_y, starting_x, starting_y - 2),
+                                      false);
+            }
+
+            CheckPossibleMovePawn(available_moves,
+                                  Move(starting_x, starting_y, starting_x - 1, starting_y - 1),
+                                  true);
+            CheckPossibleMovePawn(available_moves,
+                                  Move(starting_x, starting_y, starting_x + 1, starting_y - 1),
+                                  true);
             break;
         case PieceColor::BLACK:
-            available_moves.emplace_back(starting_x, starting_y, starting_x, starting_y + 1);
-            available_moves.emplace_back(starting_x, starting_y, starting_x, starting_y + 2);
+            CheckPossibleMovePawn(available_moves,
+                                  Move(starting_x, starting_y, starting_x, starting_y + 1),
+                                  false);
+
+            if (starting_square.IsPieceFirstMove()) {
+                CheckPossibleMovePawn(available_moves,
+                                      Move(starting_x, starting_y, starting_x, starting_y + 2),
+                                      false);
+            }
+            
+            CheckPossibleMovePawn(available_moves,
+                                  Move(starting_x, starting_y, starting_x - 1, starting_y + 1),
+                                  true);
+            CheckPossibleMovePawn(available_moves,
+                                  Move(starting_x, starting_y, starting_x - 1, starting_y + 1),
+                                  true);
             break;
     }
 }
@@ -209,7 +238,35 @@ void Board::GetAvailableMovesKing(std::vector<Move>& available_moves,
                       Move(starting_x, starting_y, starting_x + 1, starting_y + 1));
 }
 
-bool Board::CheckPossibleMove(std::vector<Move>& available_moves, const Move& move) {
+void Board::CheckPossibleMovePawn(std::vector<Move>& available_moves,
+                                  Move&& move,
+                                  bool is_diagonal_move) {
+    if (!move.Valid()) {
+        return;
+    }
+
+    const Square& starting_square = GetStartingSquare(move);
+    const Square& end_square = GetEndingSquare(move);
+
+    if (is_diagonal_move) {
+        if (!end_square.Empty()) {
+            if (end_square.GetPieceColor() == starting_square.GetPieceColor()) {
+                return;
+            }
+        } else {
+            return;
+        }
+    } else {
+        if (!end_square.Empty()) {
+            return;
+        }
+    }
+
+    // TODO: This ok?
+    available_moves.emplace_back(move);
+}
+
+bool Board::CheckPossibleMove(std::vector<Move>& available_moves, Move&& move) {
     if (!move.Valid()) {
         return false;
     }
@@ -246,9 +303,9 @@ void Board::DoMove(const Move& move) {
 
     GetStartingSquare(move).SwapPieces(GetEndingSquare(move));
 
-    _white_to_move = !_white_to_move;
+    m_white_to_move = !m_white_to_move;
 
-    _move_history.push_back(move);
+    m_move_history.push_back(move);
 }
 
 void Board::ValidateMove(const Move& move) {
@@ -266,12 +323,21 @@ void Board::ValidateMove(const Move& move) {
         throw std::runtime_error("No piece to move.");
     }
 
-    if (_white_to_move && starting_square.GetPieceColor() == PieceColor::BLACK) {
+    if (m_white_to_move && starting_square.GetPieceColor() == PieceColor::BLACK) {
         throw std::runtime_error("White to move.");
     }
 
-    if (!_white_to_move && starting_square.GetPieceColor() == PieceColor::WHITE) {
+    if (!m_white_to_move && starting_square.GetPieceColor() == PieceColor::WHITE) {
         throw std::runtime_error("Black to move.");
+    }
+
+    std::vector<Move> available_moves = GetAvailableMoves(move.GetStartingX(), move.GetStartingY());
+    if (std::find_if(available_moves.begin(),
+                     available_moves.end(),
+                     [&move](const Move& available_move) {
+                         return move.Compare(available_move);
+                     }) == available_moves.end()) {
+        throw std::runtime_error("Invalid move.");
     }
 }
 
@@ -283,7 +349,7 @@ std::string Board::ToString() const {
     for (std::size_t i = 0; i < 8; i++) {
         printable_board << 8 - i << " ";
         for (std::size_t j = 0; j < 8; j++) {
-            printable_board << _board[i][j].ToString();
+            printable_board << m_board[i][j].ToString();
         }
         printable_board << "\n";
     }
@@ -292,11 +358,11 @@ std::string Board::ToString() const {
 }
 
 Square& Board::GetStartingSquare(const Move& move) {
-    return _board[move.GetStartingY()][move.GetStartingX()];
+    return m_board[move.GetStartingY()][move.GetStartingX()];
 }
 
 Square& Board::GetEndingSquare(const Move& move) {
-    return _board[move.GetEndingY()][move.GetEndingX()];
+    return m_board[move.GetEndingY()][move.GetEndingX()];
 }
 
 const Board::BoardMatrix Board::kStartingBoard = {

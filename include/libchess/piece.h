@@ -4,7 +4,7 @@
 
 namespace libchess {
 
-enum class PieceType : unsigned int
+enum class PieceType : std::uint8_t
 {
     PAWN = 0,
     KNIGHT,
@@ -14,7 +14,7 @@ enum class PieceType : unsigned int
     KING
 };
 
-enum class PieceColor : unsigned int
+enum class PieceColor : std::uint8_t
 {
     WHITE = 0,
     BLACK
@@ -27,11 +27,16 @@ class Piece {
     [[nodiscard]] PieceType GetType() const;
     [[nodiscard]] PieceColor GetColor() const;
 
+    [[nodiscard]] bool GetFirstMove() const;
+    void SetFirstMove(bool first_move);
+
     [[nodiscard]] std::string ToString() const;
 
   private:
-    PieceType _type;
-    PieceColor _color;
+    PieceType m_type;
+    PieceColor m_color;
+
+    bool m_first_move;
 };
 
 }

@@ -5,37 +5,37 @@
 #include <memory>
 
 Sprites::Sprites(float piece_width)
-    : _piece_width(piece_width) {
+    : m_piece_width(piece_width) {
 }
 
 void Sprites::Create() {
-    if (!_texture.loadFromFile("../demo-gui/assets/pieces.png")) {
+    if (!m_texture.loadFromFile("../demo-gui/assets/pieces.png")) {
         // TODO:
     }
 
-    _texture.setSmooth(true);
+    m_texture.setSmooth(true);
 
-    CreateFromTexture(_white_king_sprite, libchess::PieceColor::WHITE, libchess::PieceType::KING);
-    CreateFromTexture(_white_queen_sprite, libchess::PieceColor::WHITE, libchess::PieceType::QUEEN);
-    CreateFromTexture(_white_rook_sprite, libchess::PieceColor::WHITE, libchess::PieceType::ROOK);
-    CreateFromTexture(_white_bishop_sprite,
+    CreateFromTexture(m_white_king_sprite, libchess::PieceColor::WHITE, libchess::PieceType::KING);
+    CreateFromTexture(m_white_queen_sprite, libchess::PieceColor::WHITE, libchess::PieceType::QUEEN);
+    CreateFromTexture(m_white_rook_sprite, libchess::PieceColor::WHITE, libchess::PieceType::ROOK);
+    CreateFromTexture(m_white_bishop_sprite,
                       libchess::PieceColor::WHITE,
                       libchess::PieceType::BISHOP);
-    CreateFromTexture(_white_knight_sprite,
+    CreateFromTexture(m_white_knight_sprite,
                       libchess::PieceColor::WHITE,
                       libchess::PieceType::KNIGHT);
-    CreateFromTexture(_white_pawn_sprite, libchess::PieceColor::WHITE, libchess::PieceType::PAWN);
+    CreateFromTexture(m_white_pawn_sprite, libchess::PieceColor::WHITE, libchess::PieceType::PAWN);
 
-    CreateFromTexture(_black_king_sprite, libchess::PieceColor::BLACK, libchess::PieceType::KING);
-    CreateFromTexture(_black_queen_sprite, libchess::PieceColor::BLACK, libchess::PieceType::QUEEN);
-    CreateFromTexture(_black_rook_sprite, libchess::PieceColor::BLACK, libchess::PieceType::ROOK);
-    CreateFromTexture(_black_bishop_sprite,
+    CreateFromTexture(m_black_king_sprite, libchess::PieceColor::BLACK, libchess::PieceType::KING);
+    CreateFromTexture(m_black_queen_sprite, libchess::PieceColor::BLACK, libchess::PieceType::QUEEN);
+    CreateFromTexture(m_black_rook_sprite, libchess::PieceColor::BLACK, libchess::PieceType::ROOK);
+    CreateFromTexture(m_black_bishop_sprite,
                       libchess::PieceColor::BLACK,
                       libchess::PieceType::BISHOP);
-    CreateFromTexture(_black_knight_sprite,
+    CreateFromTexture(m_black_knight_sprite,
                       libchess::PieceColor::BLACK,
                       libchess::PieceType::KNIGHT);
-    CreateFromTexture(_black_pawn_sprite, libchess::PieceColor::BLACK, libchess::PieceType::PAWN);
+    CreateFromTexture(m_black_pawn_sprite, libchess::PieceColor::BLACK, libchess::PieceType::PAWN);
 }
 
 void Sprites::CreateFromTexture(sf::Sprite& sprite,
@@ -128,55 +128,55 @@ void Sprites::CreateFromTexture(sf::Sprite& sprite,
         }
     };
 
-    sprite.setTexture(_texture);
+    sprite.setTexture(m_texture);
     sprite.setTextureRect(*intRect);
-    sprite.setScale(_piece_width / kTexturePieceWidth, _piece_width / kTexturePieceWidth);
+    sprite.setScale(m_piece_width / kTexturePieceWidth, m_piece_width / kTexturePieceWidth);
 }
 
 sf::Sprite& Sprites::GetWhiteKingSprite() {
-    return _white_king_sprite;
+    return m_white_king_sprite;
 }
 
 sf::Sprite& Sprites::GetWhiteQueenSprite() {
-    return _white_queen_sprite;
+    return m_white_queen_sprite;
 }
 
 sf::Sprite& Sprites::GetWhiteRookSprite() {
-    return _white_rook_sprite;
+    return m_white_rook_sprite;
 }
 
 sf::Sprite& Sprites::GetWhiteBishopSprite() {
-    return _white_bishop_sprite;
+    return m_white_bishop_sprite;
 }
 
 sf::Sprite& Sprites::GetWhiteKnightSprite() {
-    return _white_knight_sprite;
+    return m_white_knight_sprite;
 }
 
 sf::Sprite& Sprites::GetWhitePawnSprite() {
-    return _white_pawn_sprite;
+    return m_white_pawn_sprite;
 }
 
 sf::Sprite& Sprites::GetBlackKingSprite() {
-    return _black_king_sprite;
+    return m_black_king_sprite;
 }
 
 sf::Sprite& Sprites::GetBlackQueenSprite() {
-    return _black_queen_sprite;
+    return m_black_queen_sprite;
 }
 
 sf::Sprite& Sprites::GetBlackRookSprite() {
-    return _black_rook_sprite;
+    return m_black_rook_sprite;
 }
 
 sf::Sprite& Sprites::GetBlackBishopSprite() {
-    return _black_bishop_sprite;
+    return m_black_bishop_sprite;
 }
 
 sf::Sprite& Sprites::GetBlackKnightSprite() {
-    return _black_knight_sprite;
+    return m_black_knight_sprite;
 }
 
 sf::Sprite& Sprites::GetBlackPawnSprite() {
-    return _black_pawn_sprite;
+    return m_black_pawn_sprite;
 }

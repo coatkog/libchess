@@ -2,11 +2,12 @@
 
 #include "libchess/piece.h"
 
+#include <cstdint>
 #include <memory>
 
 namespace libchess {
 
-enum class SquareColor : unsigned int
+enum class SquareColor : std::uint8_t
 {
     WHITE = 0,
     BLACK
@@ -14,7 +15,6 @@ enum class SquareColor : unsigned int
 
 class Square {
   public:
-    Square();
     Square(SquareColor square_color);
     Square(SquareColor square_color, PieceType piece_type, PieceColor piece_color);
 
@@ -26,11 +26,13 @@ class Square {
     [[nodiscard]] PieceType GetPieceType() const;
     [[nodiscard]] bool Empty() const;
 
+    [[nodiscard]] bool IsPieceFirstMove() const;
+
     [[nodiscard]] std::string ToString() const;
 
   private:
-    SquareColor _color;
-    std::shared_ptr<Piece> _piece;
+    SquareColor m_color;
+    std::shared_ptr<Piece> m_piece;
 };
 
 }

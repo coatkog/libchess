@@ -15,26 +15,27 @@ class Game {
     void OnClick(int x, int y);
 
   private:
-    static constexpr float kTopLeftPadding = 16;
-    static constexpr float kBottomRightPadding = 32;
-    static constexpr float kAvailableMoveCircleRadius = 12;
+    static constexpr float kTopLeftPadding = 16.0;
+    static constexpr float kBottomRightPadding = 32.0;
+    static constexpr float kAvailableMoveCircleRadius = 12.0;
+    static constexpr float kLogsSpacing = 20.0;
 
     static const sf::Color kWhiteSquareColor;
     static const sf::Color kBlackSquareColor;
     static const sf::Color kSelectedSquareColor;
     static const sf::Color kAvailableSquareColor;
 
-    float _width;
-    float _board_width;
-    float _square_width;
+    float m_width;
+    float m_board_width;
+    float m_square_width;
 
-    libchess::Board _board;
-    std::vector<libchess::Move> _available_moves;
+    libchess::Board m_board;
+    std::vector<libchess::Move> m_available_moves;
 
-    sf::Font _font;
-    Sprites _sprites;
+    sf::Font m_font;
+    Sprites m_sprites;
 
-    sf::Vector2i _clicked_square;
+    sf::Vector2i m_clicked_square;
 
     void DoMove(int starting_x, int starting_y, int ending_x, int ending_y);
 
@@ -42,7 +43,10 @@ class Game {
 
     void DrawBoard(sf::RenderWindow& window);
     void DrawBoardInfo(sf::RenderWindow& window);
+    void DrawLogs(sf::RenderWindow& window);
     void DrawPieces(sf::RenderWindow& window);
 
     sf::Vector2i WindowClickPositionToSquare(int x, int y);
+
+    std::vector<std::string> m_logs;
 };

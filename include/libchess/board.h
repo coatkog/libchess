@@ -44,15 +44,18 @@ class Board {
   private:
     static const BoardMatrix kStartingBoard;
 
-    BoardMatrix _board;
-    bool _white_to_move;
+    BoardMatrix m_board;
+    bool m_white_to_move;
 
-    std::vector<Move> _move_history;
+    std::vector<Move> m_move_history;
 
     void ValidateMove(const Move& move);
     void DoMove(const Move& move);
 
-    bool CheckPossibleMove(std::vector<Move>& available_moves, const Move& move);
+    void CheckPossibleMovePawn(std::vector<Move>& available_moves,
+                               Move&& move,
+                               bool is_diagonal_move);
+    bool CheckPossibleMove(std::vector<Move>& available_moves, Move&& move);
 
     Square& GetStartingSquare(const Move& move);
     Square& GetEndingSquare(const Move& move);

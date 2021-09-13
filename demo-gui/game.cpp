@@ -22,14 +22,14 @@ const sf::Color Game::kSelectedSquareColor = sf::Color::Red;
 const sf::Color Game::kAvailableSquareColor = sf::Color(192, 192, 192);
 
 Game::Game(float width)
-    : _width(width)
-    , _board_width(width - kTopLeftPadding - kBottomRightPadding)
-    , _square_width((width - kTopLeftPadding - kBottomRightPadding) / 8)
-    , _sprites(_square_width)
-    , _clicked_square(-1, -1) {
-    _sprites.Create();
+    : m_width(width)
+    , m_board_width(width - kTopLeftPadding - kBottomRightPadding)
+    , m_square_width((width - kTopLeftPadding - kBottomRightPadding) / 8)
+    , m_sprites(m_square_width)
+    , m_clicked_square(-1, -1) {
+    m_sprites.Create();
 
-    if (!_font.loadFromFile("../demo-gui/assets/Roboto-Regular.ttf")) {
+    if (!m_font.loadFromFile("../demo-gui/assets/ClearSans-Regular.ttf")) {
         // TODO:
     }
 }
@@ -37,72 +37,75 @@ Game::Game(float width)
 void Game::Draw(sf::RenderWindow& window) {
     DrawBoard(window);
     DrawBoardInfo(window);
+    DrawLogs(window);
     DrawPieces(window);
 
     DrawAvailableMoves(window);
 }
 
 void Game::OnClick(int x, int y) {
-    if (x < kTopLeftPadding || x > kTopLeftPadding + _board_width) {
+    if (x < kTopLeftPadding || x > kTopLeftPadding + m_board_width) {
         return;
     }
-    if (y < kTopLeftPadding || y > kTopLeftPadding + _board_width) {
+    if (y < kTopLeftPadding || y > kTopLeftPadding + m_board_width) {
         return;
     }
 
-    if (_clicked_square.x != -1) {
+    if (m_clicked_square.x != -1) {
         sf::Vector2i new_clicked_square = WindowClickPositionToSquare(x, y);
 
-        DoMove(_clicked_square.x, _clicked_square.y, new_clicked_square.x, new_clicked_square.y);
+        DoMove(m_clicked_square.x, m_clicked_square.y, new_clicked_square.x, new_clicked_square.y);
 
-        _clicked_square.x = -1;
-        _clicked_square.y = -1;
+        m_clicked_square.x = -1;
+        m_clicked_square.y = -1;
     } else {
-        _clicked_square = WindowClickPositionToSquare(x, y);
+        m_clicked_square = WindowClickPositionToSquare(x, y);
 
         auto start = std::chrono::steady_clock::now();
 
-        _available_moves = _board.GetAvailableMoves(_clicked_square.x, _clicked_square.y);
+        m_available_moves = m_board.GetAvailableMoves(m_clicked_square.x, m_clicked_square.y);
 
         auto end = std::chrono::steady_clock::now();
 
         auto delta = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 
-        log("Took: " << delta << " µs to calculate available moves.");
+        m_logs.emplace_back("Took: " + std::to_string(delta) + " ns to calculate available moves.");
+        log("Took: " << delta << " ns to calculate available moves.");
     }
 }
 
 void Game::DoMove(int starting_x, int starting_y, int ending_x, int ending_y) {
     try {
-        _board.DoMove(starting_x, starting_y, ending_x, ending_y);
+        m_board.DoMove(starting_x, starting_y, ending_x, ending_y);
     } catch (const std::exception& e) {
+        m_logs.emplace_back("Error: " + std::string(e.what()));
         log("Error: " << e.what());
     }
 }
 
 void Game::DrawAvailableMoves(sf::RenderWindow& window) {
-    if (_clicked_square.x == -1) {
+    if (m_clicked_square.x == -1) {
         return;
     }
 
     sf::CircleShape dot(kAvailableMoveCircleRadius);
     dot.setFillColor(kAvailableSquareColor);
 
-    for (const auto& move : _available_moves) {
+    for (const auto& move : m_available_moves) {
         int ending_x = move.GetEndingX();
         int ending_y = move.GetEndingY();
 
-        dot.setPosition(sf::Vector2f(kTopLeftPadding + ending_x * _square_width +
-                                         _square_width / 2 - kAvailableMoveCircleRadius,
-                                     kTopLeftPadding + ending_y * _square_width +
-                                         _square_width / 2 - kAvailableMoveCircleRadius));
+        dot.setPosition(sf::Vector2f(kTopLeftPadding + ending_x * m_square_width +
+                                         m_square_width / 2 - kAvailableMoveCircleRadius,
+                                     kTopLeftPadding + ending_y * m_square_width +
+                                         m_square_width / 2 - kAvailableMoveCircleRadius));
 
         window.draw(dot);
     }
 }
 
 void Game::DrawBoard(sf::RenderWindow& window) {
-    sf::RectangleShape board(sf::Vector2f(_board_width, _board_width));
+    sf::RectangleShape board(sf::Vector2f(m_board_width, m_board_width));
     board.setOutlineThickness(2);
     board.setOutlineColor(sf::Color::Black);
     board.setPosition(sf::Vector2f(kTopLeftPadding, kTopLeftPadding));
@@ -111,12 +114,12 @@ void Game::DrawBoard(sf::RenderWindow& window) {
 
     for (std::size_t i = 0; i < 8; i++) {
         for (std::size_t j = 0; j < 8; j++) {
-            libchess::Square square = _board.GetBoard()[i][j];
+            libchess::Square square = m_board.GetBoard()[i][j];
 
-            sf::RectangleShape square_shape(sf::Vector2f(_square_width, _square_width));
+            sf::RectangleShape square_shape(sf::Vector2f(m_square_width, m_square_width));
 
-            if (_clicked_square.x == static_cast<int>(j) &&
-                _clicked_square.y == static_cast<int>(i)) {
+            if (m_clicked_square.x == static_cast<int>(j) &&
+                m_clicked_square.y == static_cast<int>(i)) {
                 square_shape.setFillColor(kSelectedSquareColor);
             } else {
                 if (square.GetColor() == libchess::SquareColor::WHITE) {
@@ -126,8 +129,8 @@ void Game::DrawBoard(sf::RenderWindow& window) {
                 }
             }
 
-            square_shape.setPosition(sf::Vector2f(kTopLeftPadding + j * _square_width,
-                                                  kTopLeftPadding + i * _square_width));
+            square_shape.setPosition(sf::Vector2f(kTopLeftPadding + j * m_square_width,
+                                                  kTopLeftPadding + i * m_square_width));
 
             window.draw(square_shape);
         }
@@ -137,22 +140,39 @@ void Game::DrawBoard(sf::RenderWindow& window) {
 void Game::DrawBoardInfo(sf::RenderWindow& window) {
     for (std::size_t i = 0; i < 8; i++) {
         sf::Text text;
-        text.setFont(_font);
+        text.setFont(m_font);
         text.setFillColor(sf::Color::Black);
 
-        float char_size = _width / 50;
+        float char_size = m_width / 50;
         text.setCharacterSize(char_size);
 
         text.setString(static_cast<char>('A' + i));
         text.setPosition(
-            sf::Vector2f(kTopLeftPadding + _square_width / 2 + i * _square_width - char_size / 2,
-                         _width - kBottomRightPadding / 2 - char_size / 2));
+            sf::Vector2f(kTopLeftPadding + m_square_width / 2 + i * m_square_width - char_size / 2,
+                         m_width - kBottomRightPadding / 2 - char_size / 2));
         window.draw(text);
 
         text.setString(static_cast<char>('8' - i));
         text.setPosition(
-            sf::Vector2f(_width - kBottomRightPadding / 2 - char_size / 2,
-                         kTopLeftPadding + _square_width / 2 + i * _square_width - char_size / 2));
+            sf::Vector2f(m_width - kBottomRightPadding / 2 - char_size / 2,
+                         kTopLeftPadding + m_square_width / 2 + i * m_square_width - char_size / 2));
+        window.draw(text);
+    }
+}
+
+void Game::DrawLogs(sf::RenderWindow& window) {
+    int count = 1;
+    for (const std::string& l : m_logs) {
+        sf::Text text;
+        text.setFont(m_font);
+        text.setFillColor(sf::Color::Black);
+
+        float char_size = m_width / 50;
+        text.setCharacterSize(char_size);
+
+        text.setString(l);
+        text.setPosition(sf::Vector2f(m_width + kTopLeftPadding,
+                                      kTopLeftPadding + count++ * kLogsSpacing));
         window.draw(text);
     }
 }
@@ -160,7 +180,7 @@ void Game::DrawBoardInfo(sf::RenderWindow& window) {
 void Game::DrawPieces(sf::RenderWindow& window) {
     for (std::size_t i = 0; i < 8; i++) {
         for (std::size_t j = 0; j < 8; j++) {
-            libchess::Square square = _board.GetBoard()[i][j];
+            libchess::Square square = m_board.GetBoard()[i][j];
 
             if (square.Empty()) {
                 continue;
@@ -175,22 +195,22 @@ void Game::DrawPieces(sf::RenderWindow& window) {
                 case libchess::PieceColor::BLACK: {
                     switch (piece_type) {
                         case libchess::PieceType::PAWN:
-                            sprite = &_sprites.GetBlackPawnSprite();
+                            sprite = &m_sprites.GetBlackPawnSprite();
                             break;
                         case libchess::PieceType::KNIGHT:
-                            sprite = &_sprites.GetBlackKnightSprite();
+                            sprite = &m_sprites.GetBlackKnightSprite();
                             break;
                         case libchess::PieceType::BISHOP:
-                            sprite = &_sprites.GetBlackBishopSprite();
+                            sprite = &m_sprites.GetBlackBishopSprite();
                             break;
                         case libchess::PieceType::ROOK:
-                            sprite = &_sprites.GetBlackRookSprite();
+                            sprite = &m_sprites.GetBlackRookSprite();
                             break;
                         case libchess::PieceType::QUEEN:
-                            sprite = &_sprites.GetBlackQueenSprite();
+                            sprite = &m_sprites.GetBlackQueenSprite();
                             break;
                         case libchess::PieceType::KING:
-                            sprite = &_sprites.GetBlackKingSprite();
+                            sprite = &m_sprites.GetBlackKingSprite();
                             break;
                     }
                     break;
@@ -198,22 +218,22 @@ void Game::DrawPieces(sf::RenderWindow& window) {
                 case libchess::PieceColor::WHITE: {
                     switch (piece_type) {
                         case libchess::PieceType::PAWN:
-                            sprite = &_sprites.GetWhitePawnSprite();
+                            sprite = &m_sprites.GetWhitePawnSprite();
                             break;
                         case libchess::PieceType::KNIGHT:
-                            sprite = &_sprites.GetWhiteKnightSprite();
+                            sprite = &m_sprites.GetWhiteKnightSprite();
                             break;
                         case libchess::PieceType::BISHOP:
-                            sprite = &_sprites.GetWhiteBishopSprite();
+                            sprite = &m_sprites.GetWhiteBishopSprite();
                             break;
                         case libchess::PieceType::ROOK:
-                            sprite = &_sprites.GetWhiteRookSprite();
+                            sprite = &m_sprites.GetWhiteRookSprite();
                             break;
                         case libchess::PieceType::QUEEN:
-                            sprite = &_sprites.GetWhiteQueenSprite();
+                            sprite = &m_sprites.GetWhiteQueenSprite();
                             break;
                         case libchess::PieceType::KING: {
-                            sprite = &_sprites.GetWhiteKingSprite();
+                            sprite = &m_sprites.GetWhiteKingSprite();
                             break;
                         }
                     }
@@ -225,14 +245,14 @@ void Game::DrawPieces(sf::RenderWindow& window) {
                 continue;
             }
 
-            sprite->setPosition(sf::Vector2f(kTopLeftPadding + j * _square_width,
-                                             kTopLeftPadding + i * _square_width));
+            sprite->setPosition(sf::Vector2f(kTopLeftPadding + j * m_square_width,
+                                             kTopLeftPadding + i * m_square_width));
             window.draw(*sprite);
         }
     }
 }
 
 sf::Vector2i Game::WindowClickPositionToSquare(int x, int y) {
-    return sf::Vector2i(static_cast<int>((x - kTopLeftPadding) / _square_width),
-                        static_cast<int>((y - kTopLeftPadding) / _square_width));
+    return sf::Vector2i(static_cast<int>((x - kTopLeftPadding) / m_square_width),
+                        static_cast<int>((y - kTopLeftPadding) / m_square_width));
 }
