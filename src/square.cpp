@@ -15,7 +15,7 @@ Square::Square(SquareColor square_color, PieceType piece_type, PieceColor piece_
 void Square::SwapPieces(Square& square) {
     // TODO: Should this be here?
     if (m_piece != nullptr) {
-        m_piece->SetFirstMove(false);
+        m_piece->SetMoved(true);
     }
 
     // TODO: Should this be here?
@@ -50,12 +50,12 @@ bool Square::Empty() const {
     return m_piece == nullptr;
 }
 
-bool Square::IsPieceFirstMove() const {
+bool Square::DidPieceMove() const {
     if (m_piece == nullptr) {
-        return false;
+        return true;
     }
 
-    return m_piece->GetFirstMove();
+    return m_piece->GetMoved();
 }
 
 std::string Square::ToString() const {

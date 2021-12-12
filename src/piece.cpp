@@ -5,7 +5,7 @@ namespace libchess {
 Piece::Piece(PieceType piece_type, PieceColor piece_color)
     : m_type(piece_type)
     , m_color(piece_color)
-    , m_first_move(true) {
+    , m_moved(false) {
 }
 
 PieceType Piece::GetType() const {
@@ -16,12 +16,12 @@ PieceColor Piece::GetColor() const {
     return m_color;
 }
 
-bool Piece::GetFirstMove() const {
-    return m_first_move;
+bool Piece::GetMoved() const {
+    return m_moved;
 }
 
-void Piece::SetFirstMove(bool first_move) {
-    m_first_move = first_move;
+void Piece::SetMoved(bool moved) {
+    m_moved = moved;
 }
 
 std::string Piece::ToString() const {

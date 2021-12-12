@@ -27,8 +27,8 @@ class Piece {
     [[nodiscard]] PieceType GetType() const;
     [[nodiscard]] PieceColor GetColor() const;
 
-    [[nodiscard]] bool GetFirstMove() const;
-    void SetFirstMove(bool first_move);
+    [[nodiscard]] bool GetMoved() const;
+    void SetMoved(bool moved);
 
     [[nodiscard]] std::string ToString() const;
 
@@ -36,7 +36,7 @@ class Piece {
     PieceType m_type;
     PieceColor m_color;
 
-    bool m_first_move;
+    bool m_moved;
 };
 
 }

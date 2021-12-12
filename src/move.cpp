@@ -13,11 +13,11 @@ Move::Move(const std::string& move_str) {
     m_ending_y = kOffsetY - move_str[3];
 }
 
-Move::Move(int starting_x, int starting_y, int ending_x, int ending_y) {
-    m_starting_x = starting_x;
-    m_starting_y = starting_y;
-    m_ending_x = ending_x;
-    m_ending_y = ending_y;
+Move::Move(int starting_x, int starting_y, int ending_x, int ending_y)
+    : m_starting_x(starting_x)
+    , m_starting_y(starting_y)
+    , m_ending_x(ending_x)
+    , m_ending_y(ending_y) {
 }
 
 int Move::GetStartingX() const {
@@ -56,7 +56,7 @@ bool Move::Compare(const Move& move) const {
     if (m_starting_x != move.m_starting_x) {
         return false;
     }
-    
+
     if (m_starting_y != move.m_starting_y) {
         return false;
     }
@@ -70,6 +70,24 @@ bool Move::Compare(const Move& move) const {
     }
 
     return true;
+}
+
+bool Move::IsShortCastle() const {
+    bool black_short_castle =
+        m_starting_x == 4 && m_starting_y == 0 && m_ending_x == 6 && m_ending_y == 0;
+    bool white_short_castle =
+        m_starting_x == 4 && m_starting_y == 7 && m_ending_x == 6 && m_ending_y == 7;
+
+    return black_short_castle || white_short_castle;
+}
+
+bool Move::IsLongCastle() const {
+    bool black_long_castle =
+        m_starting_x == 4 && m_starting_y == 0 && m_ending_x == 2 && m_ending_y == 0;
+    bool white_long_castle =
+        m_starting_x == 4 && m_starting_y == 7 && m_ending_x == 2 && m_ending_y == 7;
+
+    return black_long_castle || white_long_castle;
 }
 
 }

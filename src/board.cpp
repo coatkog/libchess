@@ -2,6 +2,7 @@
 #include "libchess/piece.h"
 
 #include <algorithm>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 
@@ -37,7 +38,7 @@ std::vector<Move> Board::GetAvailableMoves(int starting_x, int starting_y) {
 
     switch (starting_square.GetPieceType()) {
         case PieceType::PAWN:
-            GetAvailableMovesPawn(starting_square, available_moves, starting_x, starting_y);
+            GetAvailableMovesPawn(available_moves, starting_x, starting_y);
             break;
         case PieceType::KNIGHT:
             GetAvailableMovesKnight(available_moves, starting_x, starting_y);
@@ -59,10 +60,11 @@ std::vector<Move> Board::GetAvailableMoves(int starting_x, int starting_y) {
     return available_moves;
 }
 
-void Board::GetAvailableMovesPawn(const Square& starting_square,
-                                  std::vector<Move>& available_moves,
+void Board::GetAvailableMovesPawn(std::vector<Move>& available_moves,
                                   int starting_x,
                                   int starting_y) {
+    const Square& starting_square = m_board[starting_y][starting_x];
+
     // TODO: En passant, promotion
     switch (starting_square.GetPieceColor()) {
         case PieceColor::WHITE:
@@ -70,7 +72,7 @@ void Board::GetAvailableMovesPawn(const Square& starting_square,
                                   Move(starting_x, starting_y, starting_x, starting_y - 1),
                                   false);
 
-            if (starting_square.IsPieceFirstMove()) {
+            if (!starting_square.DidPieceMove()) {
                 CheckPossibleMovePawn(available_moves,
                                       Move(starting_x, starting_y, starting_x, starting_y - 2),
                                       false);
@@ -88,12 +90,12 @@ void Board::GetAvailableMovesPawn(const Square& starting_square,
                                   Move(starting_x, starting_y, starting_x, starting_y + 1),
                                   false);
 
-            if (starting_square.IsPieceFirstMove()) {
+            if (!starting_square.DidPieceMove()) {
                 CheckPossibleMovePawn(available_moves,
                                       Move(starting_x, starting_y, starting_x, starting_y + 2),
                                       false);
             }
-            
+
             CheckPossibleMovePawn(available_moves,
                                   Move(starting_x, starting_y, starting_x - 1, starting_y + 1),
                                   true);
@@ -223,7 +225,9 @@ void Board::GetAvailableMovesQueen(std::vector<Move>& available_moves,
 void Board::GetAvailableMovesKing(std::vector<Move>& available_moves,
                                   int starting_x,
                                   int starting_y) {
-    // TODO: Castling
+    CheckPossibleMoveShortCastle(available_moves, starting_x, starting_y);
+    CheckPossibleMoveLongCastle(available_moves, starting_x, starting_y);
+
     CheckPossibleMove(available_moves,
                       Move(starting_x, starting_y, starting_x - 1, starting_y - 1));
     CheckPossibleMove(available_moves, Move(starting_x, starting_y, starting_x - 1, starting_y));
@@ -266,6 +270,56 @@ void Board::CheckPossibleMovePawn(std::vector<Move>& available_moves,
     available_moves.emplace_back(move);
 }
 
+void Board::CheckPossibleMoveShortCastle(std::vector<Move>& available_moves,
+                                         int starting_x,
+                                         int starting_y) {
+    // Checking if the king moved is sufficient
+    // Since if the king moves back to the initial position, he still moved
+    if (!GetStartingSquare(starting_x, starting_y).DidPieceMove()) {
+        if (!GetStartingSquare(starting_x + 1, starting_y).Empty()) {
+            return;
+        }
+
+        if (!GetStartingSquare(starting_x + 2, starting_y).Empty()) {
+            return;
+        }
+
+        const Square& right_rook_square = GetStartingSquare(starting_x + 3, starting_y);
+
+        // Same logic for checking as for the king
+        if (!right_rook_square.Empty() && !right_rook_square.DidPieceMove()) {
+            available_moves.emplace_back(starting_x, starting_y, starting_x + 2, starting_y);
+        }
+    }
+}
+
+void Board::CheckPossibleMoveLongCastle(std::vector<Move>& available_moves,
+                                        int starting_x,
+                                        int starting_y) {
+    // Checking if the king moved is sufficient
+    // Since if the king moves back to the initial position, he still moved
+    if (!GetStartingSquare(starting_x, starting_y).DidPieceMove()) {
+        if (!GetStartingSquare(starting_x - 1, starting_y).Empty()) {
+            return;
+        }
+
+        if (!GetStartingSquare(starting_x - 2, starting_y).Empty()) {
+            return;
+        }
+
+        if (!GetStartingSquare(starting_x - 3, starting_y).Empty()) {
+            return;
+        }
+
+        const Square& left_rook_square = GetStartingSquare(starting_x - 4, starting_y);
+
+        // Same logic for checking as for the king
+        if (!left_rook_square.Empty() && !left_rook_square.DidPieceMove()) {
+            available_moves.emplace_back(starting_x, starting_y, starting_x - 2, starting_y);
+        }
+    }
+}
+
 bool Board::CheckPossibleMove(std::vector<Move>& available_moves, Move&& move) {
     if (!move.Valid()) {
         return false;
@@ -301,7 +355,27 @@ void Board::DoMove(int starting_x, int starting_y, int ending_x, int ending_y) {
 void Board::DoMove(const Move& move) {
     ValidateMove(move);
 
-    GetStartingSquare(move).SwapPieces(GetEndingSquare(move));
+    Square& starting_square = GetStartingSquare(move);
+
+    // Check if the move is castling and do the rook move
+    if (starting_square.GetPieceType() == PieceType::KING) {
+        std::unique_ptr<Move> rook_move;
+        int y = starting_square.GetPieceColor() == PieceColor::WHITE ? 7 : 0;
+
+        if (move.IsShortCastle()) {
+            rook_move = std::make_unique<Move>(7, y, 5, y);
+        }
+
+        if (move.IsLongCastle()) {
+            rook_move = std::make_unique<Move>(0, y, 3, y);
+        }
+
+        if (rook_move) {
+            GetStartingSquare(*rook_move).SwapPieces(GetEndingSquare(*rook_move));
+        }
+    }
+
+    starting_square.SwapPieces(GetEndingSquare(move));
 
     m_white_to_move = !m_white_to_move;
 
@@ -355,6 +429,10 @@ std::string Board::ToString() const {
     }
 
     return printable_board.str();
+}
+
+Square& Board::GetStartingSquare(int starting_x, int starting_y) {
+    return m_board[starting_y][starting_x];
 }
 
 Square& Board::GetStartingSquare(const Move& move) {

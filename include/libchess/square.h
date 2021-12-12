@@ -26,7 +26,7 @@ class Square {
     [[nodiscard]] PieceType GetPieceType() const;
     [[nodiscard]] bool Empty() const;
 
-    [[nodiscard]] bool IsPieceFirstMove() const;
+    [[nodiscard]] bool DidPieceMove() const;
 
     [[nodiscard]] std::string ToString() const;
 

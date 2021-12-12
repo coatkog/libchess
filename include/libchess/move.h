@@ -19,6 +19,9 @@ class Move {
 
     [[nodiscard]] bool Compare(const Move& move) const;
 
+    [[nodiscard]] bool IsShortCastle() const;
+    [[nodiscard]] bool IsLongCastle() const;
+
   private:
     static constexpr int kOffsetX = -'a';
     static constexpr int kOffsetY = 8 + '0';
