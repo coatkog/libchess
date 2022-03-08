@@ -9,20 +9,16 @@
 
 #include "game.h"
 
-#include <iostream>
-#include <memory>
-
-#define WINDOW_WIDTH           800
-#define WINDOW_WIDTH_WITH_LOGS WINDOW_WIDTH + 400
-#define FRAMERATE              30
+constexpr unsigned int kWindowWidth = 800;
+constexpr unsigned int kFramerate = 30;
 
 int main() {
-    Game game(WINDOW_WIDTH);
+    Game game(kWindowWidth);
 
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH_WITH_LOGS, WINDOW_WIDTH),
+    sf::RenderWindow window(sf::VideoMode(kWindowWidth, kWindowWidth),
                             "libchess demo",
                             sf::Style::Titlebar | sf::Style::Close);
-    window.setFramerateLimit(FRAMERATE);
+    window.setFramerateLimit(kFramerate);
 
     while (window.isOpen()) {
         sf::Event event;

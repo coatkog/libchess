@@ -1,7 +1,9 @@
 #include "libchess/board.h"
+#include "libchess/internal/log.h"
 #include "libchess/piece.h"
 
 #include <algorithm>
+#include <chrono>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -36,6 +38,8 @@ std::vector<Move> Board::GetAvailableMoves(int starting_x, int starting_y) {
         return available_moves;
     }
 
+    auto start = std::chrono::steady_clock::now();
+
     switch (starting_square.GetPieceType()) {
         case PieceType::PAWN:
             GetAvailableMovesPawn(available_moves, starting_x, starting_y);
@@ -56,6 +60,12 @@ std::vector<Move> Board::GetAvailableMoves(int starting_x, int starting_y) {
             GetAvailableMovesKing(available_moves, starting_x, starting_y);
             break;
     }
+
+    auto end = std::chrono::steady_clock::now();
+
+    auto delta = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+    debug("Took [{}] μs to calculate available moves.", std::to_string(delta));
 
     return available_moves;
 }

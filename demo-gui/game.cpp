@@ -12,9 +12,6 @@
 #include <iostream>
 #include <iterator>
 #include <memory>
-#include <sstream>
-
-#define log(x) std::cout << x << std::endl
 
 const sf::Color Game::kWhiteSquareColor = sf::Color::White;
 const sf::Color Game::kBlackSquareColor = sf::Color(128, 128, 128);
@@ -37,7 +34,6 @@ Game::Game(float width)
 void Game::Draw(sf::RenderWindow& window) {
     DrawBoard(window);
     DrawBoardInfo(window);
-    DrawLogs(window);
     DrawPieces(window);
 
     DrawAvailableMoves(window);
@@ -61,25 +57,14 @@ void Game::OnClick(int x, int y) {
     } else {
         m_clicked_square = WindowClickPositionToSquare(x, y);
 
-        auto start = std::chrono::steady_clock::now();
-
         m_available_moves = m_board.GetAvailableMoves(m_clicked_square.x, m_clicked_square.y);
-
-        auto end = std::chrono::steady_clock::now();
-
-        auto delta = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-
-        m_logs.emplace_back("Took: " + std::to_string(delta) + " ns to calculate available moves.");
-        log("Took: " << delta << " ns to calculate available moves.");
     }
 }
 
 void Game::DoMove(int starting_x, int starting_y, int ending_x, int ending_y) {
     try {
         m_board.DoMove(starting_x, starting_y, ending_x, ending_y);
-    } catch (const std::exception& e) {
-        m_logs.emplace_back("Error: " + std::string(e.what()));
-        log("Error: " << e.what());
+    } catch (const std::exception&) {
     }
 }
 
@@ -153,26 +138,9 @@ void Game::DrawBoardInfo(sf::RenderWindow& window) {
         window.draw(text);
 
         text.setString(static_cast<char>('8' - i));
-        text.setPosition(
-            sf::Vector2f(m_width - kBottomRightPadding / 2 - char_size / 2,
-                         kTopLeftPadding + m_square_width / 2 + i * m_square_width - char_size / 2));
-        window.draw(text);
-    }
-}
-
-void Game::DrawLogs(sf::RenderWindow& window) {
-    int count = 1;
-    for (const std::string& l : m_logs) {
-        sf::Text text;
-        text.setFont(m_font);
-        text.setFillColor(sf::Color::Black);
-
-        float char_size = m_width / 50;
-        text.setCharacterSize(char_size);
-
-        text.setString(l);
-        text.setPosition(sf::Vector2f(m_width + kTopLeftPadding,
-                                      kTopLeftPadding + count++ * kLogsSpacing));
+        text.setPosition(sf::Vector2f(
+            m_width - kBottomRightPadding / 2 - char_size / 2,
+            kTopLeftPadding + m_square_width / 2 + i * m_square_width - char_size / 2));
         window.draw(text);
     }
 }

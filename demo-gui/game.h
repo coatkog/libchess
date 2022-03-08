@@ -18,7 +18,6 @@ class Game {
     static constexpr float kTopLeftPadding = 16.0;
     static constexpr float kBottomRightPadding = 32.0;
     static constexpr float kAvailableMoveCircleRadius = 12.0;
-    static constexpr float kLogsSpacing = 20.0;
 
     static const sf::Color kWhiteSquareColor;
     static const sf::Color kBlackSquareColor;
@@ -43,10 +42,7 @@ class Game {
 
     void DrawBoard(sf::RenderWindow& window);
     void DrawBoardInfo(sf::RenderWindow& window);
-    void DrawLogs(sf::RenderWindow& window);
     void DrawPieces(sf::RenderWindow& window);
 
     sf::Vector2i WindowClickPositionToSquare(int x, int y);
-
-    std::vector<std::string> m_logs;
 };
