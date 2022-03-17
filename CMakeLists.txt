@@ -16,11 +16,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 add_subdirectory(submodules/spdlog)
 
 add_library(chess SHARED
+    "src/internal/log.cpp"
+    "src/board_rep.cpp"
+    "src/board_state.cpp"
     "src/board.cpp"
     "src/move.cpp"
     "src/piece.cpp"
     "src/square.cpp"
-    "src/internal/log.cpp"
 )
 target_include_directories(chess PUBLIC include)
 target_link_libraries(chess spdlog)

@@ -4,11 +4,13 @@
 #include <exception>
 #include <iostream>
 
+#define log(x) std::cout << x << std::endl
+
 bool running = true;
 
 void my_handler(int /*s*/) {
-    std::cout << "\nExiting..." << std::endl;
-    exit(0);
+    log("\nExiting...");
+    running = false;
 }
 
 int main() {
@@ -20,22 +22,23 @@ int main() {
 
     sigaction(SIGINT, &sig_int_handler, NULL);
 
-    libchess::Board b;
+    libchess::board board;
 
     do {
-        std::cout << std::endl << b.ToString() << std::endl;
+        log("\n");
+        log(board.to_string());
 
         try {
-            std::cout << "Enter move: ";
+            log("Enter move: ");
 
             std::string move_str;
             std::cin >> move_str;
 
-            b.DoMove(move_str);
+            board.do_move(move_str);
         } catch (const std::exception& e) {
-            std::cout << e.what() << std::endl;
+            log(e.what());
         }
-    } while (true);
+    } while (running);
 
     return 0;
 }

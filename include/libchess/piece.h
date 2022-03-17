@@ -4,39 +4,35 @@
 
 namespace libchess {
 
-enum class PieceType : std::uint8_t
-{
-    PAWN = 0,
-    KNIGHT,
-    BISHOP,
-    ROOK,
-    QUEEN,
-    KING
-};
-
-enum class PieceColor : std::uint8_t
-{
-    WHITE = 0,
-    BLACK
-};
-
-class Piece {
+class piece {
   public:
-    Piece(PieceType piece_type, PieceColor piece_color);
+    enum class type : std::uint8_t
+    {
+        none = 0,
+        pawn,
+        knight,
+        bishop,
+        rook,
+        queen,
+        king
+    };
 
-    [[nodiscard]] PieceType GetType() const;
-    [[nodiscard]] PieceColor GetColor() const;
+    enum class color : std::uint8_t
+    {
+        white = 0,
+        black
+    };
 
-    [[nodiscard]] bool GetMoved() const;
-    void SetMoved(bool moved);
+    piece(type piece_type, color piece_color);
 
-    [[nodiscard]] std::string ToString() const;
+    [[nodiscard]] type get_type() const;
+    [[nodiscard]] color get_color() const;
+
+    [[nodiscard]] std::string to_string() const;
 
   private:
-    PieceType m_type;
-    PieceColor m_color;
-
-    bool m_moved;
+    type m_type;
+    color m_color;
 };
 
 }

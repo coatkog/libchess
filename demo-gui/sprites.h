@@ -3,32 +3,32 @@
 
 #include <libchess/piece.h>
 
-class Sprites {
+class sprites {
   public:
-    Sprites(float piece_width);
+    sprites(float piece_width);
 
-    void Create();
+    void create();
 
-    void CreateFromTexture(sf::Sprite& sprite,
-                           libchess::PieceColor piece_color,
-                           libchess::PieceType piece_type);
+    void create_from_texture(sf::Sprite& sprite,
+                           libchess::piece::color piece_color,
+                           libchess::piece::type piece_type);
 
-    sf::Sprite& GetWhiteKingSprite();
-    sf::Sprite& GetWhiteQueenSprite();
-    sf::Sprite& GetWhiteRookSprite();
-    sf::Sprite& GetWhiteBishopSprite();
-    sf::Sprite& GetWhiteKnightSprite();
-    sf::Sprite& GetWhitePawnSprite();
+    sf::Sprite& get_white_king_sprite();
+    sf::Sprite& get_white_queen_sprite();
+    sf::Sprite& get_white_rook_sprite();
+    sf::Sprite& get_white_bishop_sprite();
+    sf::Sprite& get_white_knight_sprite();
+    sf::Sprite& get_white_pawn_sprite();
 
-    sf::Sprite& GetBlackKingSprite();
-    sf::Sprite& GetBlackQueenSprite();
-    sf::Sprite& GetBlackRookSprite();
-    sf::Sprite& GetBlackBishopSprite();
-    sf::Sprite& GetBlackKnightSprite();
-    sf::Sprite& GetBlackPawnSprite();
+    sf::Sprite& get_black_king_sprite();
+    sf::Sprite& get_black_queen_sprite();
+    sf::Sprite& get_black_rook_sprite();
+    sf::Sprite& get_black_bishop_sprite();
+    sf::Sprite& get_black_knight_sprite();
+    sf::Sprite& get_black_pawn_sprite();
 
   private:
-    static constexpr int kTexturePieceWidth = 320;
+    static constexpr int k_texture_piece_width = 320;
 
     float m_piece_width;
 

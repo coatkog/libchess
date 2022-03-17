@@ -2,67 +2,29 @@
 
 namespace libchess {
 
-Square::Square(SquareColor square_color)
-    : m_color(square_color)
-    , m_piece(nullptr) {
+square::square(color color)
+    : m_color(color)
+    , m_piece(piece::type::none, piece::color::white) {
 }
 
-Square::Square(SquareColor square_color, PieceType piece_type, PieceColor piece_color)
-    : m_color(square_color)
-    , m_piece(std::make_shared<Piece>(piece_type, piece_color)) {
+void square::set_piece(piece piece) {
+    m_piece = piece;
 }
 
-void Square::SwapPieces(Square& square) {
-    // TODO: Should this be here?
-    if (m_piece != nullptr) {
-        m_piece->SetMoved(true);
-    }
-
-    // TODO: Should this be here?
-    if (!square.Empty()) {
-        square.m_piece = nullptr;
-    }
-
-    std::swap(m_piece, square.m_piece);
-}
-
-SquareColor Square::GetColor() const {
+square::color square::get_color() const {
     return m_color;
 }
 
-PieceColor Square::GetPieceColor() const {
-    if (m_piece == nullptr) {
-        // TODO: throw exception
-    }
-
-    return m_piece->GetColor();
+piece square::get_piece() const {
+    return m_piece;
 }
 
-PieceType Square::GetPieceType() const {
-    if (m_piece == nullptr) {
-        // TODO: throw exception
-    }
-
-    return m_piece->GetType();
+bool square::empty() const {
+    return m_piece.get_type() == piece::type::none;
 }
 
-bool Square::Empty() const {
-    return m_piece == nullptr;
-}
-
-bool Square::DidPieceMove() const {
-    if (m_piece == nullptr) {
-        return true;
-    }
-
-    return m_piece->GetMoved();
-}
-
-std::string Square::ToString() const {
-    if (m_piece != nullptr) {
-        return m_piece->ToString();
-    }
-    return ".";
+std::string square::to_string() const {
+    return m_piece.to_string();
 }
 
 }

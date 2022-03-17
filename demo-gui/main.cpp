@@ -13,7 +13,7 @@ constexpr unsigned int kWindowWidth = 800;
 constexpr unsigned int kFramerate = 30;
 
 int main() {
-    Game game(kWindowWidth);
+    game game(kWindowWidth);
 
     sf::RenderWindow window(sf::VideoMode(kWindowWidth, kWindowWidth),
                             "libchess demo",
@@ -28,13 +28,13 @@ int main() {
             }
 
             if (event.type == sf::Event::MouseButtonPressed) {
-                game.OnClick(event.mouseButton.x, event.mouseButton.y);
+                game.on_click(event.mouseButton.x, event.mouseButton.y);
             }
         }
 
         window.clear(sf::Color(sf::Color::White));
 
-        game.Draw(window);
+        game.draw(window);
 
         window.display();
     }

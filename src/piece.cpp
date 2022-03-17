@@ -2,60 +2,55 @@
 
 namespace libchess {
 
-Piece::Piece(PieceType piece_type, PieceColor piece_color)
+piece::piece(type piece_type, color piece_color)
     : m_type(piece_type)
-    , m_color(piece_color)
-    , m_moved(false) {
+    , m_color(piece_color) {
 }
 
-PieceType Piece::GetType() const {
+piece::type piece::get_type() const {
     return m_type;
 }
 
-PieceColor Piece::GetColor() const {
+piece::color piece::get_color() const {
     return m_color;
 }
 
-bool Piece::GetMoved() const {
-    return m_moved;
-}
-
-void Piece::SetMoved(bool moved) {
-    m_moved = moved;
-}
-
-std::string Piece::ToString() const {
+std::string piece::to_string() const {
     switch (m_color) {
-        case PieceColor::BLACK: {
+        case color::black: {
             switch (m_type) {
-                case PieceType::PAWN:
+                case type::none:
+                    return " ";
+                case type::pawn:
                     return "p";
-                case PieceType::KNIGHT:
+                case type::knight:
                     return "n";
-                case PieceType::BISHOP:
+                case type::bishop:
                     return "b";
-                case PieceType::ROOK:
+                case type::rook:
                     return "r";
-                case PieceType::QUEEN:
+                case type::queen:
                     return "q";
-                case PieceType::KING:
+                case type::king:
                     return "k";
             }
             break;
         }
-        case PieceColor::WHITE: {
+        case color::white: {
             switch (m_type) {
-                case PieceType::PAWN:
+                case type::none:
+                    return " ";
+                case type::pawn:
                     return "P";
-                case PieceType::KNIGHT:
+                case type::knight:
                     return "N";
-                case PieceType::BISHOP:
+                case type::bishop:
                     return "B";
-                case PieceType::ROOK:
+                case type::rook:
                     return "R";
-                case PieceType::QUEEN:
+                case type::queen:
                     return "Q";
-                case PieceType::KING:
+                case type::king:
                     return "K";
             }
             break;

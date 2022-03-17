@@ -6,43 +6,43 @@
 
 #include "sprites.h"
 
-class Game {
+class game {
   public:
-    Game(float width);
+    game(float width);
 
-    void Draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window);
 
-    void OnClick(int x, int y);
+    void on_click(int x, int y);
 
   private:
-    static constexpr float kTopLeftPadding = 16.0;
-    static constexpr float kBottomRightPadding = 32.0;
-    static constexpr float kAvailableMoveCircleRadius = 12.0;
+    static constexpr float k_top_left_padding = 16.0;
+    static constexpr float k_bottom_right_padding = 32.0;
+    static constexpr float k_available_move_circle_radius = 12.0;
 
-    static const sf::Color kWhiteSquareColor;
-    static const sf::Color kBlackSquareColor;
-    static const sf::Color kSelectedSquareColor;
-    static const sf::Color kAvailableSquareColor;
+    static const sf::Color k_white_square_color;
+    static const sf::Color k_black_square_color;
+    static const sf::Color k_selected_square_color;
+    static const sf::Color k_available_square_color;
 
     float m_width;
     float m_board_width;
     float m_square_width;
 
-    libchess::Board m_board;
-    std::vector<libchess::Move> m_available_moves;
+    libchess::board m_board;
+    std::vector<libchess::move> m_available_moves;
 
     sf::Font m_font;
-    Sprites m_sprites;
+    sprites m_sprites;
 
     sf::Vector2i m_clicked_square;
 
-    void DoMove(int starting_x, int starting_y, int ending_x, int ending_y);
+    void do_move(int starting_x, int starting_y, int ending_x, int ending_y);
 
-    void DrawAvailableMoves(sf::RenderWindow& window);
+    void draw_board(sf::RenderWindow& window);
+    void draw_board_info(sf::RenderWindow& window);
+    void draw_pieces(sf::RenderWindow& window);
 
-    void DrawBoard(sf::RenderWindow& window);
-    void DrawBoardInfo(sf::RenderWindow& window);
-    void DrawPieces(sf::RenderWindow& window);
+    void draw_available_moves(sf::RenderWindow& window);
 
-    sf::Vector2i WindowClickPositionToSquare(int x, int y);
+    sf::Vector2i window_click_position_to_square(int x, int y);
 };

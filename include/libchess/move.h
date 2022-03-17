@@ -5,31 +5,23 @@
 
 namespace libchess {
 
-class Move {
-  public:
-    Move(const std::string& move_str);
-    Move(int starting_x, int starting_y, int ending_x, int ending_y);
+struct move {
+    move(const std::string& move_str);
+    move(int starting_x, int starting_y, int ending_x, int ending_y);
 
-    [[nodiscard]] int GetStartingX() const;
-    [[nodiscard]] int GetStartingY() const;
-    [[nodiscard]] int GetEndingX() const;
-    [[nodiscard]] int GetEndingY() const;
+    [[nodiscard]] std::string to_string() const;
 
-    [[nodiscard]] bool Valid() const;
+    [[nodiscard]] bool valid() const;
 
-    [[nodiscard]] bool Compare(const Move& move) const;
+    [[nodiscard]] bool is_short_castle() const;
+    [[nodiscard]] bool is_long_castle() const;
 
-    [[nodiscard]] bool IsShortCastle() const;
-    [[nodiscard]] bool IsLongCastle() const;
+    bool operator==(const move& rhs) const;
 
-  private:
-    static constexpr int kOffsetX = -'a';
-    static constexpr int kOffsetY = 8 + '0';
-
-    int m_starting_x;
-    int m_starting_y;
-    int m_ending_x;
-    int m_ending_y;
+    int starting_x;
+    int starting_y;
+    int ending_x;
+    int ending_y;
 };
 
 }

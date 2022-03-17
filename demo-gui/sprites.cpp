@@ -4,124 +4,144 @@
 #include <SFML/System/Vector2.hpp>
 #include <memory>
 
-Sprites::Sprites(float piece_width)
+sprites::sprites(float piece_width)
     : m_piece_width(piece_width) {
 }
 
-void Sprites::Create() {
+void sprites::create() {
     if (!m_texture.loadFromFile("../demo-gui/assets/pieces.png")) {
         // TODO:
     }
 
     m_texture.setSmooth(true);
 
-    CreateFromTexture(m_white_king_sprite, libchess::PieceColor::WHITE, libchess::PieceType::KING);
-    CreateFromTexture(m_white_queen_sprite, libchess::PieceColor::WHITE, libchess::PieceType::QUEEN);
-    CreateFromTexture(m_white_rook_sprite, libchess::PieceColor::WHITE, libchess::PieceType::ROOK);
-    CreateFromTexture(m_white_bishop_sprite,
-                      libchess::PieceColor::WHITE,
-                      libchess::PieceType::BISHOP);
-    CreateFromTexture(m_white_knight_sprite,
-                      libchess::PieceColor::WHITE,
-                      libchess::PieceType::KNIGHT);
-    CreateFromTexture(m_white_pawn_sprite, libchess::PieceColor::WHITE, libchess::PieceType::PAWN);
+    create_from_texture(m_white_king_sprite,
+                        libchess::piece::color::white,
+                        libchess::piece::type::king);
+    create_from_texture(m_white_queen_sprite,
+                        libchess::piece::color::white,
+                        libchess::piece::type::queen);
+    create_from_texture(m_white_rook_sprite,
+                        libchess::piece::color::white,
+                        libchess::piece::type::rook);
+    create_from_texture(m_white_bishop_sprite,
+                        libchess::piece::color::white,
+                        libchess::piece::type::bishop);
+    create_from_texture(m_white_knight_sprite,
+                        libchess::piece::color::white,
+                        libchess::piece::type::knight);
+    create_from_texture(m_white_pawn_sprite,
+                        libchess::piece::color::white,
+                        libchess::piece::type::pawn);
 
-    CreateFromTexture(m_black_king_sprite, libchess::PieceColor::BLACK, libchess::PieceType::KING);
-    CreateFromTexture(m_black_queen_sprite, libchess::PieceColor::BLACK, libchess::PieceType::QUEEN);
-    CreateFromTexture(m_black_rook_sprite, libchess::PieceColor::BLACK, libchess::PieceType::ROOK);
-    CreateFromTexture(m_black_bishop_sprite,
-                      libchess::PieceColor::BLACK,
-                      libchess::PieceType::BISHOP);
-    CreateFromTexture(m_black_knight_sprite,
-                      libchess::PieceColor::BLACK,
-                      libchess::PieceType::KNIGHT);
-    CreateFromTexture(m_black_pawn_sprite, libchess::PieceColor::BLACK, libchess::PieceType::PAWN);
+    create_from_texture(m_black_king_sprite,
+                        libchess::piece::color::black,
+                        libchess::piece::type::king);
+    create_from_texture(m_black_queen_sprite,
+                        libchess::piece::color::black,
+                        libchess::piece::type::queen);
+    create_from_texture(m_black_rook_sprite,
+                        libchess::piece::color::black,
+                        libchess::piece::type::rook);
+    create_from_texture(m_black_bishop_sprite,
+                        libchess::piece::color::black,
+                        libchess::piece::type::bishop);
+    create_from_texture(m_black_knight_sprite,
+                        libchess::piece::color::black,
+                        libchess::piece::type::knight);
+    create_from_texture(m_black_pawn_sprite,
+                        libchess::piece::color::black,
+                        libchess::piece::type::pawn);
 }
 
-void Sprites::CreateFromTexture(sf::Sprite& sprite,
-                                libchess::PieceColor piece_color,
-                                libchess::PieceType piece_type) {
-    std::unique_ptr<sf::IntRect> intRect;
+void sprites::create_from_texture(sf::Sprite& sprite,
+                                  libchess::piece::color piece_color,
+                                  libchess::piece::type piece_type) {
+    sf::IntRect intRect;
 
     switch (piece_color) {
-        case libchess::PieceColor::BLACK: {
+        case libchess::piece::color::black: {
             switch (piece_type) {
-                case libchess::PieceType::PAWN:
-                    intRect = std::make_unique<sf::IntRect>(5 * kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::none:
                     break;
-                case libchess::PieceType::KNIGHT:
-                    intRect = std::make_unique<sf::IntRect>(3 * kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::pawn:
+                    intRect = sf::IntRect(5 * k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
-                case libchess::PieceType::BISHOP:
-                    intRect = std::make_unique<sf::IntRect>(2 * kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::knight:
+                    intRect = sf::IntRect(3 * k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
-                case libchess::PieceType::ROOK:
-                    intRect = std::make_unique<sf::IntRect>(4 * kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::bishop:
+                    intRect = sf::IntRect(2 * k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
-                case libchess::PieceType::QUEEN:
-                    intRect = std::make_unique<sf::IntRect>(kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::rook:
+                    intRect = sf::IntRect(4 * k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
-                case libchess::PieceType::KING:
-                    intRect = std::make_unique<sf::IntRect>(0 * kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::queen:
+                    intRect = sf::IntRect(k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
+                    break;
+                case libchess::piece::type::king:
+                    intRect = sf::IntRect(0 * k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
             }
             break;
         }
-        case libchess::PieceColor::WHITE: {
+        case libchess::piece::color::white: {
             switch (piece_type) {
-                case libchess::PieceType::PAWN:
-                    intRect = std::make_unique<sf::IntRect>(5 * kTexturePieceWidth,
-                                                            0,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::none:
                     break;
-                case libchess::PieceType::KNIGHT:
-                    intRect = std::make_unique<sf::IntRect>(3 * kTexturePieceWidth,
-                                                            0,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::pawn:
+                    intRect = sf::IntRect(5 * k_texture_piece_width,
+                                          0,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
-                case libchess::PieceType::BISHOP:
-                    intRect = std::make_unique<sf::IntRect>(2 * kTexturePieceWidth,
-                                                            0,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::knight:
+                    intRect = sf::IntRect(3 * k_texture_piece_width,
+                                          0,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
-                case libchess::PieceType::ROOK:
-                    intRect = std::make_unique<sf::IntRect>(4 * kTexturePieceWidth,
-                                                            0,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::bishop:
+                    intRect = sf::IntRect(2 * k_texture_piece_width,
+                                          0,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
-                case libchess::PieceType::QUEEN:
-                    intRect = std::make_unique<sf::IntRect>(1 * kTexturePieceWidth,
-                                                            0,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::rook:
+                    intRect = sf::IntRect(4 * k_texture_piece_width,
+                                          0,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
-                case libchess::PieceType::KING:
-                    intRect = std::make_unique<sf::IntRect>(0 * kTexturePieceWidth,
-                                                            0,
-                                                            kTexturePieceWidth,
-                                                            kTexturePieceWidth);
+                case libchess::piece::type::queen:
+                    intRect = sf::IntRect(1 * k_texture_piece_width,
+                                          0,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
+                    break;
+                case libchess::piece::type::king:
+                    intRect = sf::IntRect(0 * k_texture_piece_width,
+                                          0,
+                                          k_texture_piece_width,
+                                          k_texture_piece_width);
                     break;
             }
             break;
@@ -129,54 +149,54 @@ void Sprites::CreateFromTexture(sf::Sprite& sprite,
     };
 
     sprite.setTexture(m_texture);
-    sprite.setTextureRect(*intRect);
-    sprite.setScale(m_piece_width / kTexturePieceWidth, m_piece_width / kTexturePieceWidth);
+    sprite.setTextureRect(intRect);
+    sprite.setScale(m_piece_width / k_texture_piece_width, m_piece_width / k_texture_piece_width);
 }
 
-sf::Sprite& Sprites::GetWhiteKingSprite() {
+sf::Sprite& sprites::get_white_king_sprite() {
     return m_white_king_sprite;
 }
 
-sf::Sprite& Sprites::GetWhiteQueenSprite() {
+sf::Sprite& sprites::get_white_queen_sprite() {
     return m_white_queen_sprite;
 }
 
-sf::Sprite& Sprites::GetWhiteRookSprite() {
+sf::Sprite& sprites::get_white_rook_sprite() {
     return m_white_rook_sprite;
 }
 
-sf::Sprite& Sprites::GetWhiteBishopSprite() {
+sf::Sprite& sprites::get_white_bishop_sprite() {
     return m_white_bishop_sprite;
 }
 
-sf::Sprite& Sprites::GetWhiteKnightSprite() {
+sf::Sprite& sprites::get_white_knight_sprite() {
     return m_white_knight_sprite;
 }
 
-sf::Sprite& Sprites::GetWhitePawnSprite() {
+sf::Sprite& sprites::get_white_pawn_sprite() {
     return m_white_pawn_sprite;
 }
 
-sf::Sprite& Sprites::GetBlackKingSprite() {
+sf::Sprite& sprites::get_black_king_sprite() {
     return m_black_king_sprite;
 }
 
-sf::Sprite& Sprites::GetBlackQueenSprite() {
+sf::Sprite& sprites::get_black_queen_sprite() {
     return m_black_queen_sprite;
 }
 
-sf::Sprite& Sprites::GetBlackRookSprite() {
+sf::Sprite& sprites::get_black_rook_sprite() {
     return m_black_rook_sprite;
 }
 
-sf::Sprite& Sprites::GetBlackBishopSprite() {
+sf::Sprite& sprites::get_black_bishop_sprite() {
     return m_black_bishop_sprite;
 }
 
-sf::Sprite& Sprites::GetBlackKnightSprite() {
+sf::Sprite& sprites::get_black_knight_sprite() {
     return m_black_knight_sprite;
 }
 
-sf::Sprite& Sprites::GetBlackPawnSprite() {
+sf::Sprite& sprites::get_black_pawn_sprite() {
     return m_black_pawn_sprite;
 }

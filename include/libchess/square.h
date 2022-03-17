@@ -7,32 +7,28 @@
 
 namespace libchess {
 
-enum class SquareColor : std::uint8_t
-{
-    WHITE = 0,
-    BLACK
-};
-
-class Square {
+class square {
   public:
-    Square(SquareColor square_color);
-    Square(SquareColor square_color, PieceType piece_type, PieceColor piece_color);
+    enum class color : std::uint8_t
+    {
+        white = 0,
+        black
+    };
 
-    void SwapPieces(Square& square);
+    square(color color);
 
-    [[nodiscard]] SquareColor GetColor() const;
+    void set_piece(piece piece);
 
-    [[nodiscard]] PieceColor GetPieceColor() const;
-    [[nodiscard]] PieceType GetPieceType() const;
-    [[nodiscard]] bool Empty() const;
+    [[nodiscard]] color get_color() const;
 
-    [[nodiscard]] bool DidPieceMove() const;
+    [[nodiscard]] piece get_piece() const;
+    [[nodiscard]] bool empty() const;
 
-    [[nodiscard]] std::string ToString() const;
+    [[nodiscard]] std::string to_string() const;
 
   private:
-    SquareColor m_color;
-    std::shared_ptr<Piece> m_piece;
+    color m_color;
+    piece m_piece;
 };
 
 }

@@ -1,68 +1,37 @@
 #pragma once
 
+#include "libchess/board_rep.h"
+#include "libchess/board_state.h"
 #include "libchess/move.h"
 #include "libchess/square.h"
 
-#include <array>
-#include <memory>
 #include <string>
 #include <vector>
 
 namespace libchess {
 
-class Board {
+class board {
   public:
-    using BoardMatrix = std::array<std::array<Square, 8>, 8>;
+    board();
 
-    Board();
+    static std::string get_fen();
 
-    static std::string GetFen();
+    [[nodiscard]] const square& get_square(std::size_t x, std::size_t y) const;
 
-    [[nodiscard]] BoardMatrix GetBoard() const;
+    [[nodiscard]] std::string to_string() const;
 
-    std::vector<Move> GetAvailableMoves(int starting_x, int starting_y);
+    std::vector<move> get_available_moves(int starting_x, int starting_y);
 
-    void DoMove(const std::string& move_str);
-    void DoMove(int starting_x, int starting_y, int ending_x, int ending_y);
-
-    [[nodiscard]] std::string ToString() const;
+    void do_move(const std::string& move_str);
+    void do_move(int starting_x, int starting_y, int ending_x, int ending_y);
 
   private:
-    static const BoardMatrix kStartingBoard;
+    board_state m_board_state {};
+    board_rep m_board_rep;
 
-    BoardMatrix m_board;
-    bool m_white_to_move;
+    std::vector<move> m_move_history;
 
-    std::vector<Move> m_move_history;
-
-    void ValidateMove(const Move& move);
-    void DoMove(const Move& move);
-
-    void GetAvailableMovesPawn(std::vector<Move>& available_moves, int starting_x, int starting_y);
-    void GetAvailableMovesKnight(std::vector<Move>& available_moves,
-                                 int starting_x,
-                                 int starting_y);
-    void GetAvailableMovesBishop(std::vector<Move>& available_moves,
-                                 int starting_x,
-                                 int starting_y);
-    void GetAvailableMovesRook(std::vector<Move>& available_moves, int starting_x, int starting_y);
-    void GetAvailableMovesQueen(std::vector<Move>& available_moves, int starting_x, int starting_y);
-    void GetAvailableMovesKing(std::vector<Move>& available_moves, int starting_x, int starting_y);
-
-    void CheckPossibleMovePawn(std::vector<Move>& available_moves,
-                               Move&& move,
-                               bool is_diagonal_move);
-    void CheckPossibleMoveShortCastle(std::vector<Move>& available_moves,
-                                      int starting_x,
-                                      int starting_y);
-    void CheckPossibleMoveLongCastle(std::vector<Move>& available_moves,
-                                     int starting_x,
-                                     int starting_y);
-    bool CheckPossibleMove(std::vector<Move>& available_moves, Move&& move);
-
-    Square& GetStartingSquare(const Move& move);
-    Square& GetStartingSquare(int starting_x, int starting_y);
-    Square& GetEndingSquare(const Move& move);
+    void do_move(const move& move);
 };
 
 }

@@ -13,116 +13,95 @@
 #include <iterator>
 #include <memory>
 
-const sf::Color Game::kWhiteSquareColor = sf::Color::White;
-const sf::Color Game::kBlackSquareColor = sf::Color(128, 128, 128);
-const sf::Color Game::kSelectedSquareColor = sf::Color::Red;
-const sf::Color Game::kAvailableSquareColor = sf::Color(192, 192, 192);
+const sf::Color game::k_white_square_color = sf::Color::White;
+const sf::Color game::k_black_square_color = sf::Color(128, 128, 128);
+const sf::Color game::k_selected_square_color = sf::Color::Red;
+const sf::Color game::k_available_square_color = sf::Color(192, 192, 192);
 
-Game::Game(float width)
+game::game(float width)
     : m_width(width)
-    , m_board_width(width - kTopLeftPadding - kBottomRightPadding)
-    , m_square_width((width - kTopLeftPadding - kBottomRightPadding) / 8)
+    , m_board_width(width - k_top_left_padding - k_bottom_right_padding)
+    , m_square_width((width - k_top_left_padding - k_bottom_right_padding) / 8)
     , m_sprites(m_square_width)
     , m_clicked_square(-1, -1) {
-    m_sprites.Create();
+    m_sprites.create();
 
     if (!m_font.loadFromFile("../demo-gui/assets/ClearSans-Regular.ttf")) {
         // TODO:
     }
 }
 
-void Game::Draw(sf::RenderWindow& window) {
-    DrawBoard(window);
-    DrawBoardInfo(window);
-    DrawPieces(window);
+void game::draw(sf::RenderWindow& window) {
+    draw_board(window);
+    draw_board_info(window);
+    draw_pieces(window);
 
-    DrawAvailableMoves(window);
+    draw_available_moves(window);
 }
 
-void Game::OnClick(int x, int y) {
-    if (x < kTopLeftPadding || x > kTopLeftPadding + m_board_width) {
+void game::on_click(int x, int y) {
+    if (x < k_top_left_padding || x > k_top_left_padding + m_board_width) {
         return;
     }
-    if (y < kTopLeftPadding || y > kTopLeftPadding + m_board_width) {
+    if (y < k_top_left_padding || y > k_top_left_padding + m_board_width) {
         return;
     }
 
     if (m_clicked_square.x != -1) {
-        sf::Vector2i new_clicked_square = WindowClickPositionToSquare(x, y);
+        sf::Vector2i new_clicked_square = window_click_position_to_square(x, y);
 
-        DoMove(m_clicked_square.x, m_clicked_square.y, new_clicked_square.x, new_clicked_square.y);
+        do_move(m_clicked_square.x, m_clicked_square.y, new_clicked_square.x, new_clicked_square.y);
 
         m_clicked_square.x = -1;
         m_clicked_square.y = -1;
     } else {
-        m_clicked_square = WindowClickPositionToSquare(x, y);
+        m_clicked_square = window_click_position_to_square(x, y);
 
-        m_available_moves = m_board.GetAvailableMoves(m_clicked_square.x, m_clicked_square.y);
+        m_available_moves = m_board.get_available_moves(m_clicked_square.x, m_clicked_square.y);
     }
 }
 
-void Game::DoMove(int starting_x, int starting_y, int ending_x, int ending_y) {
+void game::do_move(int starting_x, int starting_y, int ending_x, int ending_y) {
     try {
-        m_board.DoMove(starting_x, starting_y, ending_x, ending_y);
+        m_board.do_move(starting_x, starting_y, ending_x, ending_y);
     } catch (const std::exception&) {
     }
 }
 
-void Game::DrawAvailableMoves(sf::RenderWindow& window) {
-    if (m_clicked_square.x == -1) {
-        return;
-    }
-
-    sf::CircleShape dot(kAvailableMoveCircleRadius);
-    dot.setFillColor(kAvailableSquareColor);
-
-    for (const auto& move : m_available_moves) {
-        int ending_x = move.GetEndingX();
-        int ending_y = move.GetEndingY();
-
-        dot.setPosition(sf::Vector2f(kTopLeftPadding + ending_x * m_square_width +
-                                         m_square_width / 2 - kAvailableMoveCircleRadius,
-                                     kTopLeftPadding + ending_y * m_square_width +
-                                         m_square_width / 2 - kAvailableMoveCircleRadius));
-
-        window.draw(dot);
-    }
-}
-
-void Game::DrawBoard(sf::RenderWindow& window) {
+void game::draw_board(sf::RenderWindow& window) {
     sf::RectangleShape board(sf::Vector2f(m_board_width, m_board_width));
     board.setOutlineThickness(2);
     board.setOutlineColor(sf::Color::Black);
-    board.setPosition(sf::Vector2f(kTopLeftPadding, kTopLeftPadding));
+    board.setPosition(sf::Vector2f(k_top_left_padding, k_top_left_padding));
 
     window.draw(board);
 
-    for (std::size_t i = 0; i < 8; i++) {
-        for (std::size_t j = 0; j < 8; j++) {
-            libchess::Square square = m_board.GetBoard()[i][j];
+    for (std::size_t x = 0; x < 8; x++) {
+        for (std::size_t y = 0; y < 8; y++) {
+            const libchess::square& square = m_board.get_square(x, y);
 
             sf::RectangleShape square_shape(sf::Vector2f(m_square_width, m_square_width));
 
-            if (m_clicked_square.x == static_cast<int>(j) &&
-                m_clicked_square.y == static_cast<int>(i)) {
-                square_shape.setFillColor(kSelectedSquareColor);
+            if (m_clicked_square.x == static_cast<int>(x) &&
+                m_clicked_square.y == static_cast<int>(y)) {
+                square_shape.setFillColor(k_selected_square_color);
             } else {
-                if (square.GetColor() == libchess::SquareColor::WHITE) {
-                    square_shape.setFillColor(kWhiteSquareColor);
+                if (square.get_color() == libchess::square::color::white) {
+                    square_shape.setFillColor(k_white_square_color);
                 } else {
-                    square_shape.setFillColor(kBlackSquareColor);
+                    square_shape.setFillColor(k_black_square_color);
                 }
             }
 
-            square_shape.setPosition(sf::Vector2f(kTopLeftPadding + j * m_square_width,
-                                                  kTopLeftPadding + i * m_square_width));
+            square_shape.setPosition(sf::Vector2f(k_top_left_padding + x * m_square_width,
+                                                  k_top_left_padding + y * m_square_width));
 
             window.draw(square_shape);
         }
     }
 }
 
-void Game::DrawBoardInfo(sf::RenderWindow& window) {
+void game::draw_board_info(sf::RenderWindow& window) {
     for (std::size_t i = 0; i < 8; i++) {
         sf::Text text;
         text.setFont(m_font);
@@ -133,75 +112,79 @@ void Game::DrawBoardInfo(sf::RenderWindow& window) {
 
         text.setString(static_cast<char>('A' + i));
         text.setPosition(
-            sf::Vector2f(kTopLeftPadding + m_square_width / 2 + i * m_square_width - char_size / 2,
-                         m_width - kBottomRightPadding / 2 - char_size / 2));
+            sf::Vector2f(k_top_left_padding + m_square_width / 2 + i * m_square_width - char_size / 2,
+                         m_width - k_bottom_right_padding / 2 - char_size / 2));
         window.draw(text);
 
         text.setString(static_cast<char>('8' - i));
         text.setPosition(sf::Vector2f(
-            m_width - kBottomRightPadding / 2 - char_size / 2,
-            kTopLeftPadding + m_square_width / 2 + i * m_square_width - char_size / 2));
+            m_width - k_bottom_right_padding / 2 - char_size / 2,
+            k_top_left_padding + m_square_width / 2 + i * m_square_width - char_size / 2));
         window.draw(text);
     }
 }
 
-void Game::DrawPieces(sf::RenderWindow& window) {
-    for (std::size_t i = 0; i < 8; i++) {
-        for (std::size_t j = 0; j < 8; j++) {
-            libchess::Square square = m_board.GetBoard()[i][j];
+void game::draw_pieces(sf::RenderWindow& window) {
+    for (std::size_t x = 0; x < 8; x++) {
+        for (std::size_t y = 0; y < 8; y++) {
+            const libchess::square& square = m_board.get_square(x, y);
 
-            if (square.Empty()) {
+            if (square.empty()) {
                 continue;
             }
 
             sf::Sprite* sprite = nullptr;
 
-            libchess::PieceColor piece_color = square.GetPieceColor();
-            libchess::PieceType piece_type = square.GetPieceType();
+            libchess::piece::color piece_color = square.get_piece().get_color();
+            libchess::piece::type piece_type = square.get_piece().get_type();
 
             switch (piece_color) {
-                case libchess::PieceColor::BLACK: {
+                case libchess::piece::color::black: {
                     switch (piece_type) {
-                        case libchess::PieceType::PAWN:
-                            sprite = &m_sprites.GetBlackPawnSprite();
+                        case libchess::piece::type::none:
                             break;
-                        case libchess::PieceType::KNIGHT:
-                            sprite = &m_sprites.GetBlackKnightSprite();
+                        case libchess::piece::type::pawn:
+                            sprite = &m_sprites.get_black_pawn_sprite();
                             break;
-                        case libchess::PieceType::BISHOP:
-                            sprite = &m_sprites.GetBlackBishopSprite();
+                        case libchess::piece::type::knight:
+                            sprite = &m_sprites.get_black_knight_sprite();
                             break;
-                        case libchess::PieceType::ROOK:
-                            sprite = &m_sprites.GetBlackRookSprite();
+                        case libchess::piece::type::bishop:
+                            sprite = &m_sprites.get_black_bishop_sprite();
                             break;
-                        case libchess::PieceType::QUEEN:
-                            sprite = &m_sprites.GetBlackQueenSprite();
+                        case libchess::piece::type::rook:
+                            sprite = &m_sprites.get_black_rook_sprite();
                             break;
-                        case libchess::PieceType::KING:
-                            sprite = &m_sprites.GetBlackKingSprite();
+                        case libchess::piece::type::queen:
+                            sprite = &m_sprites.get_black_queen_sprite();
+                            break;
+                        case libchess::piece::type::king:
+                            sprite = &m_sprites.get_black_king_sprite();
                             break;
                     }
                     break;
                 }
-                case libchess::PieceColor::WHITE: {
+                case libchess::piece::color::white: {
                     switch (piece_type) {
-                        case libchess::PieceType::PAWN:
-                            sprite = &m_sprites.GetWhitePawnSprite();
+                        case libchess::piece::type::none:
                             break;
-                        case libchess::PieceType::KNIGHT:
-                            sprite = &m_sprites.GetWhiteKnightSprite();
+                        case libchess::piece::type::pawn:
+                            sprite = &m_sprites.get_white_pawn_sprite();
                             break;
-                        case libchess::PieceType::BISHOP:
-                            sprite = &m_sprites.GetWhiteBishopSprite();
+                        case libchess::piece::type::knight:
+                            sprite = &m_sprites.get_white_knight_sprite();
                             break;
-                        case libchess::PieceType::ROOK:
-                            sprite = &m_sprites.GetWhiteRookSprite();
+                        case libchess::piece::type::bishop:
+                            sprite = &m_sprites.get_white_bishop_sprite();
                             break;
-                        case libchess::PieceType::QUEEN:
-                            sprite = &m_sprites.GetWhiteQueenSprite();
+                        case libchess::piece::type::rook:
+                            sprite = &m_sprites.get_white_rook_sprite();
                             break;
-                        case libchess::PieceType::KING: {
-                            sprite = &m_sprites.GetWhiteKingSprite();
+                        case libchess::piece::type::queen:
+                            sprite = &m_sprites.get_white_queen_sprite();
+                            break;
+                        case libchess::piece::type::king: {
+                            sprite = &m_sprites.get_white_king_sprite();
                             break;
                         }
                     }
@@ -213,14 +196,32 @@ void Game::DrawPieces(sf::RenderWindow& window) {
                 continue;
             }
 
-            sprite->setPosition(sf::Vector2f(kTopLeftPadding + j * m_square_width,
-                                             kTopLeftPadding + i * m_square_width));
+            sprite->setPosition(sf::Vector2f(k_top_left_padding + x * m_square_width,
+                                             k_top_left_padding + y * m_square_width));
             window.draw(*sprite);
         }
     }
 }
 
-sf::Vector2i Game::WindowClickPositionToSquare(int x, int y) {
-    return sf::Vector2i(static_cast<int>((x - kTopLeftPadding) / m_square_width),
-                        static_cast<int>((y - kTopLeftPadding) / m_square_width));
+void game::draw_available_moves(sf::RenderWindow& window) {
+    if (m_clicked_square.x == -1) {
+        return;
+    }
+
+    sf::CircleShape dot(k_available_move_circle_radius);
+    dot.setFillColor(k_available_square_color);
+
+    for (const auto& move : m_available_moves) {
+        dot.setPosition(sf::Vector2f(k_top_left_padding + move.ending_x * m_square_width +
+                                         m_square_width / 2 - k_available_move_circle_radius,
+                                     k_top_left_padding + move.ending_y * m_square_width +
+                                         m_square_width / 2 - k_available_move_circle_radius));
+
+        window.draw(dot);
+    }
+}
+
+sf::Vector2i game::window_click_position_to_square(int x, int y) {
+    return sf::Vector2i(static_cast<int>((x - k_top_left_padding) / m_square_width),
+                        static_cast<int>((y - k_top_left_padding) / m_square_width));
 }
