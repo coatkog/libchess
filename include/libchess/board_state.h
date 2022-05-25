@@ -43,55 +43,68 @@ class board_state {
 
     bool m_white_to_move = true;
 
-    static inline std::uint64_t index(std::size_t x, std::size_t y) {
+    static inline std::uint64_t bb_index(std::size_t x, std::size_t y) {
         return static_cast<std::uint64_t>(1) << (63 - x - y * 8);
     };
 
-    static inline std::pair<std::size_t, std::size_t> coords(std::uint64_t index) {
+    static inline std::pair<std::size_t, std::size_t> coords(std::uint64_t bb_index) {
         std::size_t pos = 63;
-        while (index != 1) { // TODO: Can be optimized
+        while (bb_index != 1) { // TODO: Can be optimized
             pos--;
-            index >>= 1;
+            bb_index >>= 1;
         }
         return std::make_pair(pos % 8, pos / 8);
     };
 
-    static inline bool is_set(std::uint64_t bitboard, std::uint64_t index) {
-        return (bitboard & index) != 0;
-    };
-
-    static inline bool is_unset(std::uint64_t bitboard, std::uint64_t index) {
-        return (~bitboard & index) != 0;
-    };
-
-    static inline void set(std::uint64_t& bitboard, std::uint64_t index) {
-        bitboard |= index;
+    static inline bool in_range(std::uint64_t bb_index) {
+        return bb_index != 0;
     }
 
-    static inline void reset(std::uint64_t& bitboard, std::uint64_t index) {
-        bitboard &= ~index;
+    static inline bool coords_in_range(std::size_t x, std::size_t y) {
+        // std::size_t(0) - 1 = max std::size_t -> always >= 0
+        return x <= 7 && y <= 7;
+    }
+
+    static inline bool is_set(std::uint64_t bitboard, std::uint64_t bb_index) {
+        return (bitboard & bb_index) != 0;
+    };
+
+    static inline bool is_unset(std::uint64_t bitboard, std::uint64_t bb_index) {
+        return (~bitboard & bb_index) != 0;
+    };
+
+    static inline void set(std::uint64_t& bitboard, std::uint64_t bb_index) {
+        bitboard |= bb_index;
+    }
+
+    static inline void reset(std::uint64_t& bitboard, std::uint64_t bb_index) {
+        bitboard &= ~bb_index;
     }
 
     static inline void reset_n_set(std::uint64_t& bitboard,
-                                   std::uint64_t reset_index,
-                                   std::uint64_t set_index) {
-        reset(bitboard, reset_index);
-        set(bitboard, set_index);
+                                   std::uint64_t reset_bb_index,
+                                   std::uint64_t set_bb_index) {
+        reset(bitboard, reset_bb_index);
+        set(bitboard, set_bb_index);
     }
 
-    [[nodiscard]] piece get_piece(std::uint64_t index) const;
+    [[nodiscard]] piece get_piece(std::uint64_t bb_index) const;
 
-    [[nodiscard]] std::vector<move> get_available_moves(std::uint64_t index) const;
+    [[nodiscard]] std::vector<move> get_available_moves(std::uint64_t bb_index) const;
 
     void get_available_moves_pawn_white(std::vector<move>& available_moves,
-                                        std::uint64_t index) const;
+                                        std::uint64_t bb_index) const;
     void get_available_moves_pawn_black(std::vector<move>& available_moves,
-                                        std::uint64_t index) const;
-    void get_available_moves_knight(std::vector<move>& available_moves, std::uint64_t index) const;
-    void get_available_moves_bishop(std::vector<move>& available_moves, std::uint64_t index) const;
-    void get_available_moves_rook(std::vector<move>& available_moves, std::uint64_t index) const;
-    void get_available_moves_queen(std::vector<move>& available_moves, std::uint64_t index) const;
-    void get_available_moves_king(std::vector<move>& available_moves, std::uint64_t index) const;
+                                        std::uint64_t bb_index) const;
+    void get_available_moves_knight(std::vector<move>& available_moves,
+                                    std::uint64_t bb_index,
+                                    std::uint64_t position) const;
+    void get_available_moves_bishop(std::vector<move>& available_moves,
+                                    std::uint64_t bb_index,
+                                    std::uint64_t position) const;
+    void get_available_moves_rook(std::vector<move>& available_moves, std::uint64_t bb_index) const;
+    void get_available_moves_queen(std::vector<move>& available_moves, std::uint64_t bb_index) const;
+    void get_available_moves_king(std::vector<move>& available_moves, std::uint64_t bb_index) const;
 
     static constexpr std::uint64_t k_start_position_white = 0x000000000000ffff;
     static constexpr std::uint64_t k_start_position_white_pawns = 0x000000000000ff00;

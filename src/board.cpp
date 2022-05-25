@@ -2,6 +2,8 @@
 #include "libchess/internal/log.h"
 #include "libchess/piece.h"
 
+#include <sstream>
+
 namespace libchess {
 
 board::board()
@@ -37,7 +39,7 @@ void board::do_move(const move& move) {
         error("Invalid move [{}]", move.to_string());
         return;
     }
-    
+
     m_board_state.do_move(move);
     m_board_rep.update(m_board_state);
 
@@ -45,7 +47,15 @@ void board::do_move(const move& move) {
 }
 
 std::vector<move> board::get_available_moves(int starting_x, int starting_y) {
-    return m_board_state.get_available_moves(starting_x, starting_y);
+    std::vector<move> moves = m_board_state.get_available_moves(starting_x, starting_y);
+
+    std::stringstream ss;
+    for (const auto& move : moves) {
+        ss << move.to_string() << ' ';
+    }
+    info("Available moves: {}", ss.str());
+
+    return moves;
 }
 
 }
